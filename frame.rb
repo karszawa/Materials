@@ -9,7 +9,9 @@ class Frame
     @start_time = Time.now
   end
 
-  def update; end
+  def update
+    self
+  end
 
   def elapsed_time
     (Time.new - @start_time).to_f
@@ -25,9 +27,9 @@ class Opening < Frame
   end
 
   def update
-    return self if elapsed_time < @call_me_again_time
+    return Select.new if @call_me_again_time < elapsed_time
 
-    Select.new
+    self
   end
 end
 
@@ -35,6 +37,18 @@ end
 class Select < Frame
   def initialize
     super
+
+    @now_select = 0
+    @str_list = %w[ Play, Ranking ]
+    @frame_class_list = [ Play, Ranking ]
+  end
+
+  def update
+    @now_select = (@now_select + Input.y) % @value_list.size
+
+    if Input.keyPush?(K_RETURN) then return @frame_class_list[@now_select].new end
+
+    self
   end
 end
 
@@ -44,5 +58,12 @@ class Play < Frame
     super
   end
 
+end
+
+
+class Ranking
+  def initialize
+    super
+  end
 end
 
