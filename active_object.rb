@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+require 'dxrubyex'
 require './stdlib'
 require './conf.rb'
 
@@ -6,10 +7,15 @@ include Conf
 
 
 class ActiveObject
+  attr_reader :life, :collisions
+
   def initialize(point, velocity)
     @point = point; @velocity = velocity
 
-    @state = :arrive
+    @life = 0
+    @collisions = []
+
+    @state = :apper
     @start_time = Time.now
     @arrive_time = 1
   end
@@ -21,28 +27,30 @@ class ActiveObject
       move
       fire
     end
+
+    collision.each { |obj| obj.set @point.x, @point.y }
   end
 
   def move; end
   def fire; end
 
-  # trueを返すならオブジェクトは死亡
   def hit
     @state = :dead
-    true
   end
 end
 
 
 class Player < ActiveObject
+  attr_reader :life
+
   def initialize(point, bullets)
     super point, Vector2.new(0, 0)
 
+    @life = @@conf[:player_init_life]
+
     @bullets = bullets
 
-    @life = 1000
-
-    @player_vel_lim = 10
+    @collisions << CollisionTriangle.new self, 0, 20, 4.5, 0, -4.5, 0
   end
 
   def update
@@ -53,8 +61,8 @@ class Player < ActiveObject
   end
 
   def move
-    @velocity = (@velocity + Input);
-    @velocity.size = min @velocity.size, @player_vel_lim
+    @velocity += Input
+    @velocity.size = min @velocity.size, @@conf[:player_vel_limit]
 
     next_point = @point + @velocity
     min = @@conf[:move_area_min]; max = @@conf[:move_area_max]
@@ -62,7 +70,6 @@ class Player < ActiveObject
   end
 
   def fire
-    
   end
 
   def hit

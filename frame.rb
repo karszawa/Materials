@@ -82,6 +82,29 @@ class Play < Frame
   end
 
   def collision
+    enemies.size.downto 0 do |enm|
+
+      bullets.size.downto 0 do |blt|
+        bc = bullets[blt - 1].collisions; ec = enemies[enm - 1].collisions
+
+        if Collision.check bc, ec then
+          bullets.delete_at(blt - 1)
+          enemies.delete_at(enm - 1) if enemies[enm - 1].life <= 0
+          break
+        end
+      end
+    end
+
+    enemies.size.downto 0 do |enm|
+      if Collision.check @player.collisions, enemies[enm - 1] then
+        enemies.delete_at(enm - 1) if enemies[enm - 1].life <= 0
+
+        game_over if @player.life <= 0
+      end
+    end
+  end
+
+  def game_over
   end
 
   def draw

@@ -8,4 +8,7 @@ module Conf
 
   @@conf[:player_init_x] = 50
   @@conf[:player_init_y] = 50
+
+  @@conf[:player_init_life] = 1000
+  @@conf[:player_vel_limit] = 10
 end
