@@ -25,14 +25,11 @@ class Opening < Frame
     super
 
     @call_me_again_time = 5
-
-    @player = Player.new Point.new 50, 50
   end
 
   def update
     return Select.new if @call_me_again_time < elapsed_time
 
-    @player.update
     self
   end
 end
@@ -57,11 +54,39 @@ class Select < Frame
 end
 
 
+# 画面に出す情報。DrawProcess側がほとんど本体
+class HUD
+  def initialize(player)
+    @player = player
+  end
+end
+
+
 class Play < Frame
   def initialize
     super
+
+    @enemies = []
+    @bullets = []
+
+    init_pnt = Point.new @@conf[:player_init_x], @@conf[:player_init_y]
+    @player = Player.new init_pnt, @bullets
+
+    @hud = HUD.new @player
   end
 
+  def update
+    [@player, @enemies, @bullets].flatten.hs_each :update
+
+    collison
+  end
+
+  def collision
+  end
+
+  def draw
+    [@player, @enemies, @bullets, @hud].flatten.hs_each :draw
+  end
 end
 
 

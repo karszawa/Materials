@@ -35,8 +35,10 @@ end
 
 
 class Player < ActiveObject
-  def initialize(point)
+  def initialize(point, bullets)
     super point, Vector2.new(0, 0)
+
+    @bullets = bullets
 
     @life = 1000
 
@@ -60,10 +62,18 @@ class Player < ActiveObject
   end
 
   def fire
+    
   end
 
   def hit
     @life -= 1
+  end
+end
+
+
+class Bullet < ActiveObject
+  def initialize(point, velocity)
+    super point, velocity
   end
 end
 
