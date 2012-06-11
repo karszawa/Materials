@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 require 'dxruby'
+require './active_object'
 
 
 # Frameクラス同士は出来るだけ疎結合な関係にする。
@@ -24,11 +25,14 @@ class Opening < Frame
     super
 
     @call_me_again_time = 5
+
+    @player = Player.new Point.new 50, 50
   end
 
   def update
     return Select.new if @call_me_again_time < elapsed_time
 
+    @player.update
     self
   end
 end

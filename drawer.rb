@@ -2,6 +2,7 @@
 require 'dxruby'
 require './stdlib'
 
+
 module Drawer
   def self.draw(obj, obj_class = nil)
     begin
@@ -22,7 +23,10 @@ module Drawer
 
     def self.draw(obj, args)
       wait_time = args[:call_me_again_time] - obj.elapsed_time.floor
+
       Window.draw_font 0, 0, "Now Opening... #{wait_time}", @font
+
+      args[:player].draw
     end
   end
 
@@ -30,7 +34,22 @@ module Drawer
   class Select < DrawProcess
     @font = Font.new 20
 
-    def self.draw(obj)
+    def self.draw(obj, args)
+      base_x = 150, base_y = 100
+
+      args[:str_list].each_with_index do |name, idx|
+        dx = (args[:now_select] == idx ? -50 : 0)
+        Window.draw_font base_x + dx, base_y += 50, name, @font
+      end
+    end
+  end
+
+
+  class Player
+    @image = Image.load('./img/player.png')
+
+    def self.draw(obj, args)
+      Window.draw args[:point].x, args[:point].y, @image
     end
   end
 end
