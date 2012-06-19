@@ -1,5 +1,5 @@
 require 'dxruby'
-require './game'
+require './src/game'
 
 
 game = SukkiriShootingGame.new

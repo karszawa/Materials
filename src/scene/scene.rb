@@ -1,4 +1,4 @@
-class Frame
+class Scene
   def initialize
     @start_time = Time.now
   end

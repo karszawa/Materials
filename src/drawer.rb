@@ -2,7 +2,7 @@
 require 'dxruby'
 require 'dxrubyex'
 
-require './stdlib'
+require './src/stdlib'
 
 
 module Drawer
@@ -78,7 +78,7 @@ module Drawer
   end
 
 
-  class BuleEnemy < DrawProcess
+  class BlueEnemy < DrawProcess
     @image = Image.load('./img/player.png')
 
     def self.draw(obj, args)

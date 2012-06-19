@@ -1,5 +1,5 @@
-require './stdlib'
-require './active_object'
+Red 0, 100, 100, 1
 
-Red 0, Point.new(100, 100), 1
+Blue 10, 100, 100, 1
+
 

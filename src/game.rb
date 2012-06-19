@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'dxruby'
-require './drawer'
-require './frame'
+require './src/drawer'
+require './src/scene/play'
 
 
 # 全てのサブクラスは@frameを初期化する必要がある。

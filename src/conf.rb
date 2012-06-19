@@ -1,4 +1,4 @@
-require './stdlib'
+require './src/stdlib'
 
 module Conf
   @@conf = {}
