@@ -47,59 +47,62 @@ module Drawer
 
   class HUD < DrawProcess
     def self.draw(obj, args)
+      # player life
+      # rest enemies
+      # hiscore
     end
   end
 
 
   class Player < DrawProcess
-    @image = Image.load('./img/player.png')
+    @image = Image.load('./img/blue_enemy.png')
 
     def self.draw(obj, args)
-      Window.draw args[:point].x, args[:point].y, @image
+      Window.draw *args[:point].to_a, @image
     end
   end
 
 
   class Bullet < DrawProcess
-    @image = Image.load('./img/player.png')
+    @image = Image.load('./img/red_enemy.png')
 
     def self.draw(obj, args)
-      Window.draw args[:point].x, args[:point].y, @image
+      Window.draw *args[:point].to_a, @image
     end
   end
 
 
   class RedEnemy < DrawProcess
-    @image = Image.load('./img/player.png')
+    @image = Image.load('./img/red_enemy.png')
 
     def self.draw(obj, args)
-      Window.draw args[:point].x, args[:point].y, @image
+      Window.draw *args[:point].to_a, @image
     end
   end
 
 
   class BlueEnemy < DrawProcess
-    @image = Image.load('./img/player.png')
+    @image = Image.load('./img/blue_enemy.png')
 
     def self.draw(obj, args)
-      Window.draw args[:point].x, args[:point].y, @image
+      Window.draw *args[:point].to_a, @image
     end
   end
 
 
   class YellowEnemy < DrawProcess
-    @image = Image.load('./img/player.png')
+    @image = Image.load('./img/yellow_enemy.png')
 
     def self.draw(obj, args)
-      Window.draw args[:point].x, args[:point].y, @image
+      Window.draw *args[:point].to_a, @image
     end
   end
 
   class GreenEnemy < DrawProcess
-    @image = Image.load('./img/player.png')
+    @image = Image.load('./img/green_enemy.png')
 
     def self.draw(obj, args)
-      Window.draw args[:point].x, args[:point].y, @image
+      Window.draw *args[:point].to_a, @image
     end
   end
 end

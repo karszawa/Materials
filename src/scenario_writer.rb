@@ -3,6 +3,18 @@ require 'ostruct'
 require './src/active_object/enemy'
 
 
+def puts_enemies_arong_wall(a, b, type, difficulty)
+  if b < a then
+    puts_enemies_arong_wall(0, a, type, difficulty)
+    puts_enemies_arong_wall(b, @@conf[:max_divid_wall], type, difficulty)
+  else
+    for i in a..b do
+      
+    end
+  end
+end
+
+
 lambda {
   enemies_bench = []
 

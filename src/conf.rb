@@ -11,4 +11,6 @@ module Conf
 
   @@conf[:player_init_life] = 1000
   @@conf[:player_vel_limit] = 8
+
+  @@conf[:max_divid_wall] = 16
 end

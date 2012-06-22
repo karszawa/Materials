@@ -29,7 +29,7 @@ class Play < Scene
     init_pnt = Point.new @@conf[:player_init_x], @@conf[:player_init_y]
     @player = Player.new init_pnt, @bullets
 
-    @hud = HUD.new @player
+    @hud = HUD.new @player, @enemies_bench
 
     @enemies_bench = read_enemies_from_database @level
   end
@@ -110,8 +110,8 @@ end
 # 画面に出す情報。DrawProcess側がほとんど本体
 # BackGroundまで用意すると煩雑だからこちらで背景も描画しちゃう？
 class HUD
-  def initialize(player)
-    @player = player
+  def initialize(player, enemies_bench)
+    @player = player; @enmies_bench = enemies_bench
   end
 end
 

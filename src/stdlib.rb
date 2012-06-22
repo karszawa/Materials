@@ -55,9 +55,11 @@ class Vector2
     Vector2.new range( lower.x, val.x, upper.x ), range( lower.y, val.y, upper.y )
   end
 
-  def size
+  def abs
     Math.sqrt @x**2 + @y**2
   end
+
+  alias :size :abs
 
   # sizeの大きさに変形する
   def size=(res_size)
