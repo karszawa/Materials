@@ -21,8 +21,24 @@ light_source{ <1, 1, -6> White  }
 
 object
 {
-    Cube
-                 
+    difference
+    {
+        object{ Cube }
+        
+        object
+        {
+            Sphere
+                            
+            translate<+1, 0, 0>
+        }
+        
+        object
+        {
+            Sphere
+            
+            translate<-1, 0, 0>
+        }            
+    }         
     
     scale 1.3
         

@@ -3,6 +3,7 @@ require 'dxruby'
 require 'dxrubyex'
 
 require './src/stdlib'
+require './src/hitrangeview'
 
 
 module Drawer
@@ -46,10 +47,14 @@ module Drawer
 
 
   class HUD < DrawProcess
+    @font = Font.new 20
+
     def self.draw(obj, args)
       # player life
       # rest enemies
       # hiscore
+
+      Window.draw_font 0, 0, args[:scene].size.to_s, @font
     end
   end
 
@@ -59,6 +64,8 @@ module Drawer
 
     def self.draw(obj, args)
       Window.draw *args[:point].to_a, @image
+
+      HitRange.view args[:collisions]
     end
   end
 
@@ -68,6 +75,8 @@ module Drawer
 
     def self.draw(obj, args)
       Window.draw *args[:point].to_a, @image
+
+      HitRange.view args[:collisions]
     end
   end
 
@@ -77,6 +86,8 @@ module Drawer
 
     def self.draw(obj, args)
       Window.draw *args[:point].to_a, @image
+
+      HitRange.view args[:collisions]
     end
   end
 
@@ -86,6 +97,8 @@ module Drawer
 
     def self.draw(obj, args)
       Window.draw *args[:point].to_a, @image
+
+      HitRange.view args[:collisions]
     end
   end
 
@@ -95,6 +108,8 @@ module Drawer
 
     def self.draw(obj, args)
       Window.draw *args[:point].to_a, @image
+
+      HitRange.view args[:collisions]
     end
   end
 
@@ -103,6 +118,8 @@ module Drawer
 
     def self.draw(obj, args)
       Window.draw *args[:point].to_a, @image
+
+      HitRange.view args[:collisions]
     end
   end
 end

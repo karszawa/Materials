@@ -1,3 +1,5 @@
+require 'dxruby'
+require 'dxrubyex'
 require './src/stdlib'
 
 module Conf

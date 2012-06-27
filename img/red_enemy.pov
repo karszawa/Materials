@@ -20,7 +20,26 @@ light_source{ <3, 2, -5> White  }
 
 
 object{
-    Sphere                 
+    difference
+    {
+        object{ Sphere }
+        
+        object
+        {
+            Cube
+            
+            translate<0, 0, -1>
+        }
+        
+        object
+        {
+            Sphere
+            
+            scale<0.3, 0.3, 1>
+        }
+    }
+            
+                            
     
     scale 1.8
     

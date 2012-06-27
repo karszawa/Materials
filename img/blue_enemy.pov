@@ -19,10 +19,23 @@ light_source{ <+3, +2, -5> White  }
 light_source{ <-3, -2, -5> White  }
 
 object{
-    Sphere                 
+    difference
+    {
+    	object{ Sphere }
+    	
+    	object
+    	{
+    	    Sphere
+    	    
+       	    translate<0.5, 0.5, -1.1>
+       	    
+       	    material { texture { pigment { color Clear } finish { F_Glass1 } } interior { I_Glass1 fade_color Col_Aquamarine_03 } }
+    	}
+    }
     
     scale 1.1
-              
+    
+                  
     material{M_Vicks_Bottle_Glass}
     finish{ ambient 0.55 } 
 }

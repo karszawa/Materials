@@ -41,6 +41,15 @@ object
             material{M_Green_Glass} 
             finish{ ambient 0.2 phong 0.3}
         }
+        
+        object
+        {
+            Sphere
+                               
+            scale 0.6
+            translate<0, 0, -0.5>
+            material { texture { pigment { color Clear } finish { F_Glass1 } } interior { I_Glass1 fade_color Col_Azurite_04 } }
+        }
    }
     
    material{M_Green_Glass}     

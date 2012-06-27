@@ -28,11 +28,10 @@ class Player < ActiveObject
     @velocity += Input
     @velocity.size = min @velocity.size, @@conf[:player_vel_limit]
 
-    next_point = @point + @velocity
+    @point += @velocity
     @velocity.size *= 0.94
 
-    min = @@conf[:move_area_min]; max = @@conf[:move_area_max]
-    @point =  Vector2.catch min, next_point, max
+    @point = Point.catch @@conf[:move_area_min], @point, @@conf[:move_area_max]
   end
 
   def fire
@@ -40,8 +39,8 @@ class Player < ActiveObject
 
     @direc = direc if direc.size != 0
 
-    nomal_fire if Input.keyPush? K_Z
-    spiral_fire if Input.keyPush? K_X
+    nomal_fire if Input.key_down? K_Z
+    spiral_fire if Input.key_down? K_X
   end
 
   def nomal_fire
@@ -62,6 +61,8 @@ class Bullet < ActiveObject
     super point, velocity
 
     @arrive_time = 0
+
+    @collisions << CollisionCircle.new(self, 10, 10, 5)
   end
 
   def move
