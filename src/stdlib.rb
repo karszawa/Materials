@@ -38,6 +38,10 @@ class Vector2
     Vector2.new @x + other.x, @y + other.y
   end
 
+  def -@
+    Vector2.new -@x, -@y
+  end
+
   def -(other)
     Vector2.new @x - other.x, @y - other.y
   end

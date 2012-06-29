@@ -4,10 +4,21 @@ require 'dxrubyex'
 
 require './src/stdlib'
 require './src/hitrangeview'
+require './src/active_object/player'
+
+def hit_range_view(collisions, point)
+  return unless $conf[:debug]
+
+  collisions.each { |obj| obj.set *(point + $conf[:draw_gap]).to_a }
+  HitRange.view collisions
+  collisions.each { |obj| obj.set *point.to_a }
+end
 
 
 module Drawer
   def self.draw(obj, obj_class = nil)
+    return if obj.class.to_s == "Bullet" and obj.class.superclass == ActiveObject
+
     begin
       eval "#{obj_class ||= obj.class}.draw obj, obj.pack_all", binding
     rescue ArgumentError # 定義されていなければObject#drawが呼び出されるから
@@ -15,6 +26,7 @@ module Drawer
       else raise "Drawer##{obj_class}#draw is not exist." end
     end
   end
+
 
 
   # TODO:サブクラスがインスタンス変数にアクセス出来ない
@@ -48,24 +60,26 @@ module Drawer
 
   class HUD < DrawProcess
     @font = Font.new 20
+    @image = Image.load('./img/play_background.png')
 
     def self.draw(obj, args)
       # player life
       # rest enemies
       # hiscore
 
+      Window.draw *($conf[:draw_gap].to_a), @image, 0
+
       Window.draw_font 0, 0, args[:scene].size.to_s, @font
     end
   end
-
 
   class Player < DrawProcess
     @image = Image.load('./img/blue_enemy.png')
 
     def self.draw(obj, args)
-      Window.draw *args[:point].to_a, @image
+      Window.draw *(args[:point] + $conf[:draw_gap]).to_a, @image, 100
 
-      HitRange.view args[:collisions]
+      hit_range_view args[:collisions], args[:point]
     end
   end
 
@@ -74,9 +88,9 @@ module Drawer
     @image = Image.load('./img/red_enemy.png')
 
     def self.draw(obj, args)
-      Window.draw *args[:point].to_a, @image
+      Window.draw *(args[:point] + $conf[:draw_gap]).to_a, @image, 100
 
-      HitRange.view args[:collisions]
+      hit_range_view args[:collisions], args[:point]
     end
   end
 
@@ -85,9 +99,9 @@ module Drawer
     @image = Image.load('./img/red_enemy.png')
 
     def self.draw(obj, args)
-      Window.draw *args[:point].to_a, @image
+      Window.draw *(args[:point] + $conf[:draw_gap]).to_a, @image, 100
 
-      HitRange.view args[:collisions]
+      hit_range_view args[:collisions], args[:point]
     end
   end
 
@@ -96,9 +110,9 @@ module Drawer
     @image = Image.load('./img/blue_enemy.png')
 
     def self.draw(obj, args)
-      Window.draw *args[:point].to_a, @image
+      Window.draw *(args[:point] + $conf[:draw_gap]).to_a, @image, 100
 
-      HitRange.view args[:collisions]
+      hit_range_view args[:collisions], args[:point]
     end
   end
 
@@ -107,9 +121,9 @@ module Drawer
     @image = Image.load('./img/yellow_enemy.png')
 
     def self.draw(obj, args)
-      Window.draw *args[:point].to_a, @image
+      Window.draw *(args[:point] + $conf[:draw_gap]).to_a, @image, 100
 
-      HitRange.view args[:collisions]
+      hit_range_view args[:collisions], args[:point]
     end
   end
 
@@ -117,9 +131,9 @@ module Drawer
     @image = Image.load('./img/green_enemy.png')
 
     def self.draw(obj, args)
-      Window.draw *args[:point].to_a, @image
+      Window.draw *(args[:point] + $conf[:draw_gap]).to_a, @image, 100
 
-      HitRange.view args[:collisions]
+      hit_range_view args[:collisions], args[:point]
     end
   end
 end

@@ -9,7 +9,7 @@ class Player < ActiveObject
   def initialize(point, bullets)
     super point, Vector2.new(0, 0)
 
-    @life = @@conf[:player_init_life]
+    @life = $conf[:player_init_life]
     @direc = Vector2.new 0, 1
 
     @bullets = bullets
@@ -22,16 +22,18 @@ class Player < ActiveObject
     super
 
     $player_pnt = @point
+
+    $conf[:draw_gap] = $conf[:show_area_center] - $player_pnt
   end
 
   def move
     @velocity += Input
-    @velocity.size = min @velocity.size, @@conf[:player_vel_limit]
+    @velocity.size = min @velocity.size, $conf[:player_vel_limit]
 
     @point += @velocity
     @velocity.size *= 0.94
 
-    @point = Point.catch @@conf[:move_area_min], @point, @@conf[:move_area_max]
+    @point = Point.catch $conf[:move_area_min], @point, $conf[:move_area_max]
   end
 
   def fire

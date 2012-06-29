@@ -28,6 +28,11 @@ class ActiveObject
     end
   end
 
+  def point_out_of_range
+    (@point.x < $conf[:move_area_min].x || $conf[:move_area_max].x < @point.x) ||
+      (@point.y < $conf[:move_area_min].y || $conf[:move_area_max].y < @point.y)
+  end
+
   def move; end
   def fire; end
 

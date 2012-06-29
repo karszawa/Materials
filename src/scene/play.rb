@@ -9,8 +9,6 @@ require './src/scenario_writer'
 require './src/active_object/player.rb'
 
 
-include Conf
-
 
 class Array; include ArrayExtension; end
 
@@ -26,7 +24,7 @@ class Play < Scene
     @bullets = []
     @enemies_bench = []
 
-    init_pnt = Point.new @@conf[:player_init_x], @@conf[:player_init_y]
+    init_pnt = Point.new $conf[:player_init_x], $conf[:player_init_y]
     @player = Player.new init_pnt, @bullets
 
     @hud = HUD.new @bullets, @player, @enemies_bench
@@ -41,6 +39,7 @@ class Play < Scene
 
     collision
     revitalize
+    delete_out_of_range
 
     if @enemies.size == 0 && @enemies_bench.size == 0 then
       return self # DEBUG
@@ -66,6 +65,14 @@ class Play < Scene
         @enemies << @enemies_bench[i].enemy
         @enemies_bench.delete_at i
       else break end
+    end
+  end
+
+  def delete_out_of_range
+    @bullets.delete_if do |blt|
+      flag = true
+      flag &= !Collision.check(blt.collisions, $conf[:move_area_col])
+      flag &= blt.point_out_of_range
     end
   end
 
