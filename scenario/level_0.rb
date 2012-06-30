@@ -1,7 +1,7 @@
-Red 1, 100, 100, 1
+# -*- coding: utf-8 -*-
 
-Blue 10, 100, 100, 1
+Yellow 0, 100, 100, 1
+Yellow 1, 100, 100, 1
 
-base_x = -100
-20.times{ Red 1, base_x += 10, 100, 0.5 }
+100.times { |i| Yellow i, 100, 100, 1 }
 

@@ -15,7 +15,7 @@ class Player < ActiveObject
     @bullets = bullets
     @bullet_velocity = 5
 
-    @collisions << CollisionTriangle.new(self, 0, 20, 4.5, 0, -4.5, 0)
+    @collisions << CollisionCircle.new( self, 15, 30, 15 )
   end
 
   def update
@@ -64,7 +64,7 @@ class Bullet < ActiveObject
 
     @arrive_time = 0
 
-    @collisions << CollisionCircle.new(self, 10, 10, 5)
+    @collisions << CollisionCircle.new(self, 22, 22, 22)
   end
 
   def move

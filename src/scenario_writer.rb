@@ -9,7 +9,7 @@ def puts_enemies_arong_wall(a, b, type, difficulty)
     puts_enemies_arong_wall(b, @@conf[:max_divid_wall], type, difficulty)
   else
     for i in a..b do
-      
+
     end
   end
 end
@@ -24,7 +24,7 @@ lambda {
     path = "./scenario/level_#{level}.rb"
     load path if File.exist? path
 
-    enemies_bench
+    enemies_bench.sort { |a, b| b.time <=> a.time }
   end
 
   # シンボルの配列作るのはないのかな？
