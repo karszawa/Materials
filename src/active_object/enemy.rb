@@ -97,11 +97,48 @@ end
 # 遊撃、小型
 class GreenEnemy < Enemy
   def initialize(point, difficulty)
-    super point, Vector2.new( difficulty * 7 ), difficulty
-
+    super point, Vector2.new( difficulty * 6 ), difficulty
     @collisions << CollisionTriangle.new( self, 15, 0, 0, 32, 25, 52 )
+    @arrive_rad = 50
+
+    @look_rad = 100 * difficulty + 50
+    @find_flag = false
+    @max_angle = 0.4
+    set_next
   end
 
   def move
+    if @find_flag then
+      origin_angle = Math.atan2 @velocity.y, @velocity.x
+      target_angle = Math.atan2 $player_pnt.y - @point.y, $player_pnt.x - @point.x
+
+      next_angle = range -@max_angle, target_angle - origin_angle, @max_angle
+
+      @velocity.rotate! next_angle
+
+      @point += @velocity
+    else
+      @point += @velocity
+
+      set_next if (@point - @next_point).size < @arrive_rad
+
+      @find_flag = (@point - $player_pnt).size < @look_rad
+      @velocity *= 0.8 if @find_flag
+    end
+  end
+
+  def set_next
+    @next_point = rand_point
+
+    size = @velocity.size
+    @velocity = @next_point - @point
+    @velocity.size = size
+  end
+
+  def rand_point
+    rect = $conf[:move_area_max] - $conf[:move_area_min]
+    x = rand(rect.x) + $conf[:move_area_min].x
+    y = rand(rect.y) + $conf[:move_area_min].y
+    Point.new x, y
   end
 end
