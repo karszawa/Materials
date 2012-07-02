@@ -9,9 +9,22 @@ class Enemy < ActiveObject
 
     @difficulty = difficulty
   end
+
+  def fallow_player
+    origin_angle = Math.atan2 @velocity.y, @velocity.x
+    target_angle = Math.atan2 $player_pnt.y - @point.y, $player_pnt.x - @point.x
+
+    next_angle = range -@max_angle, target_angle - origin_angle, @max_angle
+
+    @velocity.rotate! next_angle
+
+    @point += @velocity
+  end
 end
 
 # 鈍速、巨大
+# プレイヤーを追う。
+# 大きくて遅い。
 class RedEnemy < Enemy
   def initialize(point, difficulty)
     super point, Vector2.new( difficulty *3 ), difficulty
@@ -21,19 +34,14 @@ class RedEnemy < Enemy
   end
 
   def move
-    origin_angle = Math.atan2 @velocity.y, @velocity.x
-    target_angle = Math.atan2 $player_pnt.y - @point.y, $player_pnt.x - @point.x
-
-    next_angle = range -@max_angle, target_angle - origin_angle, @max_angle
-
-    @velocity.rotate! next_angle
-
-    @point += @velocity
+    fallow_player
   end
 end
 
 
 # 俊敏、小型
+# プレイヤーを追う。
+# 小さくて速い。
 class BlueEnemy < Enemy
   def initialize(point, difficulty)
     super point, Vector2.new( difficulty * 6 ), difficulty
@@ -43,19 +51,14 @@ class BlueEnemy < Enemy
   end
 
   def move
-    origin_angle = Math.atan2 @velocity.y, @velocity.x
-    target_angle = Math.atan2 $player_pnt.y - @point.y, $player_pnt.x - @point.x
-
-    next_angle = range -@max_angle, target_angle - origin_angle, @max_angle
-
-    @velocity.rotate! next_angle
-
-    @point += @velocity
+    fallow_player
   end
 end
 
 
 # 番兵、中型
+# 円形の縄張りを持ち、その円周上を周回する。
+# 観測半径内にプレイヤーを発見したらプレイヤーを追うようになる。
 class YellowEnemy < Enemy
   # point は巡回円の中心とする
   def initialize(point, difficulty)
@@ -75,14 +78,7 @@ class YellowEnemy < Enemy
 
   def move
     if @find_flag then
-      origin_angle = Math.atan2 @velocity.y, @velocity.x
-      target_angle = Math.atan2 $player_pnt.y - @point.y, $player_pnt.x - @point.x
-
-      next_angle = range -@max_angle, target_angle - origin_angle, @max_angle
-
-      @velocity.rotate! next_angle
-
-      @point += @velocity
+      fallow_player
     else
       @angle += @ang_vel
       @point = @center
@@ -95,6 +91,8 @@ end
 
 
 # 遊撃、小型
+# ランダムな点を選び、そこに向かう。到着したら次の点を選び底に向かう。
+# 観測半径内にプレイヤーを発見したらプレイヤーを追うようになる。
 class GreenEnemy < Enemy
   def initialize(point, difficulty)
     super point, Vector2.new( difficulty * 6 ), difficulty
@@ -109,14 +107,7 @@ class GreenEnemy < Enemy
 
   def move
     if @find_flag then
-      origin_angle = Math.atan2 @velocity.y, @velocity.x
-      target_angle = Math.atan2 $player_pnt.y - @point.y, $player_pnt.x - @point.x
-
-      next_angle = range -@max_angle, target_angle - origin_angle, @max_angle
-
-      @velocity.rotate! next_angle
-
-      @point += @velocity
+      fallow_player
     else
       @point += @velocity
 
@@ -127,6 +118,7 @@ class GreenEnemy < Enemy
     end
   end
 
+  # 次に向かうポイントを設定し、それに従って速度も設定する
   def set_next
     @next_point = rand_point
 
