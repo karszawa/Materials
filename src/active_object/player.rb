@@ -1,5 +1,4 @@
 require './src/stdlib'
-
 require './src/active_object/active_object'
 
 

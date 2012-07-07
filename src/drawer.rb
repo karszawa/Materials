@@ -111,9 +111,10 @@ end
 
 class GreenEnemy < Enemy
   @@image = Image.load('./img/green_enemy.png')
+  @@img_size = Vector2.new @@image.width, @@image.height
 
   def draw
-    Window.draw *(@point + $conf[:draw_gap]).to_a, @@image, 100
+    Window.draw_rot *(@point + $conf[:draw_gap]).to_a, @@image, @rot_ang, nil, nil, $conf[:enem_depth]
 
     hit_range_view @collisions, @point
   end

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require './src/stdlib'
 require './src/active_object/active_object'
-
+require './src/rotate_collisions'
 
 class Enemy < ActiveObject
   def initialize(point, velocity, difficulty)
@@ -28,9 +28,9 @@ end
 class RedEnemy < Enemy
   def initialize(point, difficulty)
     super point, Vector2.new( difficulty *3 ), difficulty
+    @collisions << CollisionCircle.new( self, 22, 22, 22 )
 
     @max_angle = difficulty / 3 + 0.3
-    @collisions << CollisionCircle.new( self, 22, 22, 22 )
   end
 
   def move
@@ -45,9 +45,8 @@ end
 class BlueEnemy < Enemy
   def initialize(point, difficulty)
     super point, Vector2.new( difficulty * 6 ), difficulty
-
-    @max_angle = 0.40
     @collisions << CollisionCircle.new( self, 14, 14, 14 )
+    @max_angle = 0.40
   end
 
   def move
@@ -63,6 +62,7 @@ class YellowEnemy < Enemy
   # point は巡回円の中心とする
   def initialize(point, difficulty)
     super point, Vector2.new( difficulty * 6 ), difficulty
+    @collisions << CollisionBox.new( self, 0, 0, 35, 35 )
 
     @center = point
     @move_rad = 100 * difficulty + 50
@@ -71,12 +71,15 @@ class YellowEnemy < Enemy
     @ang_vel = 0.01
     @find_flag = false
 
+    @rot_ang = 0.0
+    @rot_vel = 1.0
     @max_angle = 0.4
-
-    @collisions << CollisionBox.new( self, 0, 0, 35, 35 )
   end
 
   def move
+    @rot_ang += @rot_vel
+    @rot_ang %= 360
+
     if @find_flag then
       fallow_player
     else
@@ -102,10 +105,17 @@ class GreenEnemy < Enemy
     @look_rad = 100 * difficulty + 50
     @find_flag = false
     @max_angle = 0.4
+
+    @rot_ang = 0
+    @rot_vel = 1
+
     set_next
   end
 
   def move
+    @rot_ang += @rot_vel
+    @rot_ang %= 360
+
     if @find_flag then
       fallow_player
     else
@@ -116,6 +126,9 @@ class GreenEnemy < Enemy
       @find_flag = (@point - $player_pnt).size < @look_rad
       @velocity *= 0.8 if @find_flag
     end
+
+    @collisions[0].setex(*@point.to_a)
+    @collisions[0].rotate(*(@point + @@img_size / 2).to_a, @rot_ang)
   end
 
   # 次に向かうポイントを設定し、それに従って速度も設定する

@@ -25,5 +25,5 @@ $conf[:player_vel_limit] = 8
 
 $conf[:max_divid_wall] = 16
 
-
+$conf[:enem_depth] = 100
 

@@ -6,7 +6,6 @@ class Object
   end
 end
 
-
 def max(*args)
   res = args[0]
   args.each{ |val| res = val if res < val }
@@ -48,6 +47,10 @@ class Vector2
 
   def *(other)
     Vector2.new @x * other, @y * other
+  end
+
+  def /(other)
+    Vector2.new @x / other, @y / other
   end
 
   def ==(other)
@@ -101,4 +104,13 @@ end
 
 
 Point = Vector2
+
+
+
+module Math
+  @PI = acos(-1);
+  def self.PI
+    @PI
+  end
+end
 
