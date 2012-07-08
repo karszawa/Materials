@@ -114,7 +114,8 @@ class GreenEnemy < Enemy
   @@img_size = Vector2.new @@image.width, @@image.height
 
   def draw
-    Window.draw_rot *(@point + $conf[:draw_gap]).to_a, @@image, @rot_ang, nil, nil, $conf[:enem_depth]
+    # Window.draw_rot *(@point + $conf[:draw_gap]).to_a, @@image, @rot_ang, nil, nil, $conf[:enem_depth]
+    @sprite.draw
 
     hit_range_view @collisions, @point
   end

@@ -99,7 +99,10 @@ end
 class GreenEnemy < Enemy
   def initialize(point, difficulty)
     super point, Vector2.new( difficulty * 6 ), difficulty
-    @collisions << CollisionTriangle.new( self, 15, 0, 0, 32, 25, 52 )
+    # @collisions << CollisionTriangle.new( self, 15, 0, 0, 32, 25, 52 )
+    @sprite = Sprite.new(0, 0, @@image)
+    @sprite.collision = [15, 0, 0, 32, 25, 52]
+
     @arrive_rad = 50
 
     @look_rad = 100 * difficulty + 50
@@ -127,8 +130,8 @@ class GreenEnemy < Enemy
       @velocity *= 0.8 if @find_flag
     end
 
-    @collisions[0].setex(*@point.to_a)
-    @collisions[0].rotate(*(@point + @@img_size / 2).to_a, @rot_ang)
+    @sprite.x = @point.x
+    @sprite.y = @point.y
   end
 
   # 次に向かうポイントを設定し、それに従って速度も設定する
