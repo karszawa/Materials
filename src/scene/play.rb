@@ -18,14 +18,13 @@ class Play < Scene
     super
 
     @level = 0
-    @scene_time = Time.now
 
     @enemies = []
     @bullets = []
     @enemies_bench = []
 
     init_pnt = Point.new $conf[:player_init_x], $conf[:player_init_y]
-    @player = Player.new init_pnt, @bullets
+    @player = Player.new init_pnt, lambda{ |blt| @bullets << blt }
 
     @hud = HUD.new @bullets, @player, @enemies_bench
 
@@ -33,8 +32,6 @@ class Play < Scene
   end
 
   def update
-    @enemies << BlueEnemy.new(Point.new( 100, 100 ), 1) if Input.keyPush?(K_RETURN)
-
     [@player, @enemies, @bullets].flatten.hs_each :update
 
     collision
@@ -58,7 +55,7 @@ class Play < Scene
   end
 
   def revitalize
-    time = Time.now - @scene_time
+    time = Time.now - @start_time
 
     (@enemies_bench.size - 1).downto 0 do |i|
       if @enemies_bench[i].time <= time then
@@ -71,7 +68,7 @@ class Play < Scene
   def delete_out_of_range
     @bullets.delete_if do |blt|
       flag = true
-      flag &= !Collision.check(blt.collisions, $conf[:move_area_col])
+      flag &= !Sprite.check(blt.sprites, $conf[:move_area_col])
       flag &= blt.point_out_of_range
     end
   end
@@ -79,9 +76,9 @@ class Play < Scene
   def collision
     @enemies.size.downto 1 do |enm|
       @bullets.size.downto 1 do |blt|
-        bc = @bullets[blt - 1].collisions; ec = @enemies[enm - 1].collisions
+        bc = @bullets[blt - 1].sprites; ec = @enemies[enm - 1].sprites
 
-        if Collision.check bc, ec then
+        if Sprite.check bc, ec then
           @bullets.delete_at(blt - 1)
           @enemies.delete_at(enm - 1) if @enemies[enm - 1].life <= 0
           break
@@ -90,9 +87,9 @@ class Play < Scene
     end
 
     @enemies.size.downto 1 do |enm|
-      pc = @player.collisions; ec = @enemies[enm - 1].collisions
+      pc = @player.sprites; ec = @enemies[enm - 1].sprites
 
-      if Collision.check pc, ec then
+      if Sprite.check pc, ec then
         @enemies.delete_at(enm - 1) if @enemies[enm - 1].life <= 0
 
         game_over if @player.life <= 0
@@ -109,7 +106,7 @@ class Play < Scene
   end
 
   def draw
-    [@player, @enemies, @bullets, @hud].flatten.hs_each :draw
+    Sprite.draw [@player, @enemies, @bullets, @hud].flatten
   end
 end
 

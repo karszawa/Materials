@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require './src/stdlib'
 require './src/active_object/active_object'
-require './src/rotate_collisions'
+
 
 class Enemy < ActiveObject
   def initialize(point, velocity, difficulty)
@@ -28,8 +28,6 @@ end
 class RedEnemy < Enemy
   def initialize(point, difficulty)
     super point, Vector2.new( difficulty *3 ), difficulty
-    @collisions << CollisionCircle.new( self, 22, 22, 22 )
-
     @max_angle = difficulty / 3 + 0.3
   end
 
@@ -45,7 +43,6 @@ end
 class BlueEnemy < Enemy
   def initialize(point, difficulty)
     super point, Vector2.new( difficulty * 6 ), difficulty
-    @collisions << CollisionCircle.new( self, 14, 14, 14 )
     @max_angle = 0.40
   end
 
@@ -62,7 +59,6 @@ class YellowEnemy < Enemy
   # point は巡回円の中心とする
   def initialize(point, difficulty)
     super point, Vector2.new( difficulty * 6 ), difficulty
-    @collisions << CollisionBox.new( self, 0, 0, 35, 35 )
 
     @center = point
     @move_rad = 100 * difficulty + 50
@@ -77,8 +73,7 @@ class YellowEnemy < Enemy
   end
 
   def move
-    @rot_ang += @rot_vel
-    @rot_ang %= 360
+    @sprites[0].angle += @rot_vel
 
     if @find_flag then
       fallow_player
@@ -99,13 +94,9 @@ end
 class GreenEnemy < Enemy
   def initialize(point, difficulty)
     super point, Vector2.new( difficulty * 6 ), difficulty
-    # @collisions << CollisionTriangle.new( self, 15, 0, 0, 32, 25, 52 )
-    @sprite = Sprite.new(0, 0, @@image)
-    @sprite.collision = [15, 0, 0, 32, 25, 52]
 
-    @arrive_rad = 50
-
-    @look_rad = 100 * difficulty + 50
+    @arrive_rad = 50 # 次のランダム目的地への到着判定半径
+    @look_rad = 100 * difficulty + 50 # プレイヤー発見半径
     @find_flag = false
     @max_angle = 0.4
 
@@ -116,8 +107,7 @@ class GreenEnemy < Enemy
   end
 
   def move
-    @rot_ang += @rot_vel
-    @rot_ang %= 360
+    @sprites[0].angle += @rot_vel
 
     if @find_flag then
       fallow_player
@@ -129,9 +119,6 @@ class GreenEnemy < Enemy
       @find_flag = (@point - $player_pnt).size < @look_rad
       @velocity *= 0.8 if @find_flag
     end
-
-    @sprite.x = @point.x
-    @sprite.y = @point.y
   end
 
   # 次に向かうポイントを設定し、それに従って速度も設定する

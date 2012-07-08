@@ -3,41 +3,38 @@ require './src/stdlib'
 
 
 class ActiveObject
-  attr_reader :life, :collisions
+  attr_reader :life, :sprites
 
   def initialize(point, velocity)
-    @point = point; @velocity = velocity
-
+    @point = point
+    @velocity = velocity
     @life = 0
-    @collisions = []
 
-    @state = :apper
     @start_time = Time.now
-    # @arrive_time = 1
-
-    @arrive_time = 0
+    @sprites = []
+    sprite_init
   end
 
   def update
-    @state = :active if @state != :active && @arrive_time < Time.now - @start_time
-
-    if @state == :active then
-      move
-      fire
-      collisions.each { |obj| obj.set @point.x, @point.y }
-    end
+    move
+    fire
+    @sprites.each { |spr| spr.x = @point.x; spr.y = @point.y; }
   end
 
   def point_out_of_range
-    (@point.x < $conf[:move_area_min].x || $conf[:move_area_max].x < @point.x) ||
-      (@point.y < $conf[:move_area_min].y || $conf[:move_area_max].y < @point.y)
+    @point.x < $conf[:move_area_min].x || $conf[:move_area_max].x < @point.x || @point.y < $conf[:move_area_min].y || $conf[:move_area_max].y < @point.y
   end
 
-  def move; end
+  def move
+    @point += @velocity
+  end
+
   def fire; end
 
   def hit(other)
     @state = :dead
   end
+
+  def sprite_init; end
 end
 

@@ -9,10 +9,10 @@ $conf[:debug] = true
 $conf[:move_area_min] = Point.new 10, 10
 $conf[:move_area_max] = Point.new 1890, 1410
 
-$conf[:move_area_col] = [ Point.new(10, 10, 1890, 10),
-                          Point.new(10, 10, 10, 1410),
-                          Point.new(10, 1410, 1890, 1410),
-                          Point.new(1890, 10, 1890, 1410) ]
+$conf[:move_area_col] = [Sprite.new(10, 10, Image.new(1880, 1)),
+                         Sprite.new(10, 10, Image.new(1, 1400)),
+                         Sprite.new(10, 1410, Image.new(1880, 1)),
+                         Sprite.new(1890, 10, Image.new(1, 1400))]
 
 $conf[:player_init_x] = 50
 $conf[:player_init_y] = 50

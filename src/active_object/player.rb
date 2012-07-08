@@ -1,20 +1,18 @@
+# -*- coding: utf-8 -*-
 require './src/stdlib'
 require './src/active_object/active_object'
 
 
 class Player < ActiveObject
-  attr_reader :life
-
-  def initialize(point, bullets)
+  # 発射した弾丸をPlay#bulletsに渡すラムダを引数に持つ
+  def initialize(point, blt_add)
     super point, Vector2.new(0, 0)
 
     @life = $conf[:player_init_life]
     @direc = Vector2.new 0, 1
-
-    @bullets = bullets
     @bullet_velocity = 5
 
-    @collisions << CollisionCircle.new( self, 15, 30, 15 )
+    @blt_add = blt_add
   end
 
   def update
@@ -45,7 +43,7 @@ class Player < ActiveObject
   end
 
   def nomal_fire
-    @bullets << Bullet.new( @point, @direc * @bullet_velocity)
+    @blt_add.call Bullet.new( @point, @direc * @bullet_velocity)
   end
 
   def spiral_fire
@@ -60,13 +58,5 @@ end
 class Bullet < ActiveObject
   def initialize(point, velocity)
     super point, velocity
-
-    @arrive_time = 0
-
-    @collisions << CollisionCircle.new(self, 22, 22, 22)
-  end
-
-  def move
-    @point += @velocity
   end
 end
