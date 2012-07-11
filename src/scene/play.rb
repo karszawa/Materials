@@ -26,13 +26,11 @@ class Play < Scene
 
     @player = Player.new lambda{ |blt| @bullets << blt }
 
-    @hud = HUD.new(
-                   lambda{ @level },
-                   lambda{ @player.life, $conf[:player_init_life] },
-                   lambda{ @enemies.size, @enemies_max },
-                   lambda{ @enemies.map{ |enm| enm.point } },
-                   lambda{ @hiscore }
-                   )
+    @hud = HUD.new( lambda{ @level },
+                    lambda{ [ @player.life, $conf[:player_init_life] ] },
+                    lambda{ [ @enemies.size, @enemies_max_size ] },
+                    lambda{ @enemies.map{ |enm| enm.point } },
+                    lambda{ @hiscore } )
 
     @enemies_bench = read_enemies_from_database @level
     @enemies_max_size = @enemies_bench.size
@@ -75,7 +73,7 @@ class Play < Scene
 
   def delete_out_of_range
     @bullets.delete_if do |blt|
-      blt.point_out_of_range && !Sprite.check(blt.sprites, $conf[:move_area_col])
+      blt.point_out_of_range && !Sprite.check(blt, $conf[:move_area_col])
     end
   end
 
@@ -86,7 +84,7 @@ class Play < Scene
     Sprite.check @player, @enemies, :hit
     Sprite.clean @enemies
 
-    self.game_over if player.vanished?
+    self.game_over if @player.vanished?
   end
 
   def game_over

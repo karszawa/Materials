@@ -6,11 +6,11 @@ require './src/active_object/active_object'
 class Player < ActiveObject
   # 発射した弾丸をPlay#bulletsに渡すラムダを引数に持つ
   def initialize(blt_add)
-    super conf[:player_init_point], Vector2.new(0, 0)
+    super $conf[:player_init_point], Vector2.new(0, 0)
 
     @life = $conf[:player_init_life]
     @direc = Vector2.new 0, 1
-    @bullet_velocity = 5
+    @bullet_velocity = 10
 
     @blt_add = blt_add
   end
@@ -33,7 +33,7 @@ class Player < ActiveObject
     direc = @velocity.dup; direc.size = 1
     @direc = direc if direc.size != 0
 
-    self.angle = Math.atan2(@direc.y, @direc.x) / Math.PI * 180}
+    self.angle = Math.atan2(@direc.y, @direc.x) / Math.PI * 180 + 90
 
     @point = Point.catch $conf[:move_area_min], @point, $conf[:move_area_max]
   end

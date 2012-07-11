@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'dxruby'
 require 'dxrubyex'
+require 'pry'
 
 require './src/stdlib'
 require './src/hitrangeview'
@@ -48,28 +49,26 @@ class HUD
   @@image = Image.load('./img/play_background.png')
 
   def draw
-    Window.draw_font 10, 60, "Lv. " + @level.to_s, @@font
-    Window.draw_font 10, 80, "Life               ", + @player_life.to_s, @@font
-    Window.draw_font 10, 100,"Hiscore " + @hiscore.to_s, @@font
+    Window.draw_font 10, 60, "Lv. " + @level.call.to_s, @@font, :z => 1000
+    Window.draw_font 10, 80, "Life                     " + @player_life.call[0].to_s, @@font, :z => 1000
+    Window.draw_font 10, 100,"Hiscore " + @hiscore.call.to_s, @@font, :z => 1000
 
     # enemies_mapping
     # Life Gage
     # Rest Enemy Gage
 
     Window.draw *($conf[:draw_gap].to_a), @@image, 0
-
-    Window.draw_font 0, 0, @scene.size.to_s, @@font
   end
 end
 
 
 class ActiveObject < Sprite
   def draw
-    @x += $conf[:draw_gap].x; @y += $conf[:draw_gap].y
+    self.x += $conf[:draw_gap].x; self.y += $conf[:draw_gap].y
 
-    super.draw
+    super
 
-    @x -= $conf[:draw_gap].x; @y -= $conf[:draw_gap].y
+    self.x -= $conf[:draw_gap].x; self.y -= $conf[:draw_gap].y
   end
 end
 
@@ -80,7 +79,7 @@ class Player < ActiveObject
   def static_init
     self.x = @point.x
     self.y = @point.y
-    self.z = 100
+    self.z = 500
 
     # 衝突範囲が複数あるから、それらに共通する回転の中心を与えなければいけない。
     self.center_x = @@image.width / 2
