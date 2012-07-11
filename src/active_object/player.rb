@@ -31,13 +31,14 @@ class Player < ActiveObject
     @velocity.size *= 0.94
 
     @point = Point.catch $conf[:move_area_min], @point, $conf[:move_area_max]
+
+    direc = @velocity.dup; direc.size = 1
+    @direc = direc if direc.size != 0
+
+    @sprites.each { |spr| spr.angle = Math.atan2(@direc.y, @direc.x) / Math.PI * 180}
   end
 
   def fire
-    direc = @velocity.dup; direc.size = 1
-
-    @direc = direc if direc.size != 0
-
     nomal_fire if Input.key_down? K_Z
     spiral_fire if Input.key_down? K_X
   end

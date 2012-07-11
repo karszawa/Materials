@@ -75,8 +75,15 @@ class Player < ActiveObject
 
   def sprite_init
     tmp = Sprite.new(*@point.to_a, @@image)
-    tmp.collision = [ 22, 22, 22 ]
+    tmp.collision = [
+                     [ 22, 22, 22 ],
+                     [ 17, 0, 0, 28, 35, 28 ],
+                     [ 11, 30, 24, 47 ],
+                     [ 18, 56, 11, 30, 24, 47 ]
+                    ]
     tmp.z = 100
+    tmp.center_x = @@image.width / 2
+    tmp.center_y = @@image.height / 2
     @sprites << tmp
   end
 end
