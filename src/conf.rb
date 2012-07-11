@@ -14,8 +14,7 @@ $conf[:move_area_col] = [Sprite.new(10, 10, Image.new(1880, 1)),
                          Sprite.new(10, 1410, Image.new(1880, 1)),
                          Sprite.new(1890, 10, Image.new(1, 1400))]
 
-$conf[:player_init_x] = 50
-$conf[:player_init_y] = 50
+$conf[:player_init_point] = Point.new 50, 50
 
 $conf[:show_area_center] = Point.new 320, 240
 $conf[:camera_point] = Point.new $conf[:player_init_x], $conf[:player_init_y]

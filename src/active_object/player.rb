@@ -5,8 +5,8 @@ require './src/active_object/active_object'
 
 class Player < ActiveObject
   # 発射した弾丸をPlay#bulletsに渡すラムダを引数に持つ
-  def initialize(point, blt_add)
-    super point, Vector2.new(0, 0)
+  def initialize(blt_add)
+    super conf[:player_init_point], Vector2.new(0, 0)
 
     @life = $conf[:player_init_life]
     @direc = Vector2.new 0, 1
@@ -30,17 +30,17 @@ class Player < ActiveObject
     @point += @velocity
     @velocity.size *= 0.94
 
-    @point = Point.catch $conf[:move_area_min], @point, $conf[:move_area_max]
-
     direc = @velocity.dup; direc.size = 1
     @direc = direc if direc.size != 0
 
-    @sprites.each { |spr| spr.angle = Math.atan2(@direc.y, @direc.x) / Math.PI * 180}
+    self.angle = Math.atan2(@direc.y, @direc.x) / Math.PI * 180}
+
+    @point = Point.catch $conf[:move_area_min], @point, $conf[:move_area_max]
   end
 
   def fire
-    nomal_fire if Input.key_down? K_Z
-    spiral_fire if Input.key_down? K_X
+    self.nomal_fire if Input.key_down? K_Z
+    self.spiral_fire if Input.key_down? K_X
   end
 
   def nomal_fire
@@ -52,6 +52,8 @@ class Player < ActiveObject
 
   def hit(other)
     @life -= 1
+
+    self.vanish if @life == 0
   end
 end
 

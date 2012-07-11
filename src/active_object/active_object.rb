@@ -2,8 +2,8 @@ require 'dxruby'
 require './src/stdlib'
 
 
-class ActiveObject
-  attr_reader :life, :sprites
+class ActiveObject < Sprite
+  attr_reader :life, :point
 
   def initialize(point, velocity)
     @point = point
@@ -11,18 +11,22 @@ class ActiveObject
     @life = 0
 
     @start_time = Time.now
-    @sprites = []
-    sprite_init
+    self.static_init
   end
 
   def update
     move
     fire
-    @sprites.each { |spr| spr.x = @point.x; spr.y = @point.y; }
+
+    self.x = @point.x
+    self.y = @point.y
   end
 
   def point_out_of_range
-    @point.x < $conf[:move_area_min].x || $conf[:move_area_max].x < @point.x || @point.y < $conf[:move_area_min].y || $conf[:move_area_max].y < @point.y
+    min = $conf[:move_area_min]
+    max = $conf[:move_area_max]
+
+    @point.x < min.x || max.x < @point.x || @point.y < min.y || max.y < @point.y
   end
 
   def move
@@ -32,9 +36,9 @@ class ActiveObject
   def fire; end
 
   def hit(other)
-    @state = :dead
+    self.vanish
   end
 
-  def sprite_init; end
+  def static_init; end
 end
 

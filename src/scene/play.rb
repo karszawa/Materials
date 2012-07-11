@@ -18,36 +18,44 @@ class Play < Scene
     super
 
     @level = 0
+    @hiscore = 0
 
     @enemies = []
     @bullets = []
     @enemies_bench = []
 
-    init_pnt = Point.new $conf[:player_init_x], $conf[:player_init_y]
-    @player = Player.new init_pnt, lambda{ |blt| @bullets << blt }
+    @player = Player.new lambda{ |blt| @bullets << blt }
 
-    @hud = HUD.new @bullets, @player, @enemies_bench
+    @hud = HUD.new(
+                   lambda{ @level },
+                   lambda{ @player.life, $conf[:player_init_life] },
+                   lambda{ @enemies.size, @enemies_max },
+                   lambda{ @enemies.map{ |enm| enm.point } },
+                   lambda{ @hiscore }
+                   )
 
     @enemies_bench = read_enemies_from_database @level
+    @enemies_max_size = @enemies_bench.size
   end
 
   def update
-    [@player, @enemies, @bullets].flatten.hs_each :update
+    Sprite.update [@player, @enemies, @bullets].flatten
 
-    collision
-    revitalize
-    delete_out_of_range
+    self.collision
+    self.revitalize
+    self.delete_out_of_range
 
     if @enemies.size == 0 && @enemies_bench.size == 0 then
       return self # DEBUG
 
       @enemies_bench = read_enemies_from_database @level += 1
+      @enemies_max_size = @enemies_bench.size
       @scene_time = Time.now
 
       # animation
 
       if @enemies_bench == 0 then
-        game_clear
+        self.game_clear
       end
     end
 
@@ -55,10 +63,10 @@ class Play < Scene
   end
 
   def revitalize
-    time = Time.now - @start_time
+    now_time = Time.now - @start_time
 
     (@enemies_bench.size - 1).downto 0 do |i|
-      if @enemies_bench[i].time <= time then
+      if @enemies_bench[i].time <= now_time then
         @enemies << @enemies_bench[i].enemy
         @enemies_bench.delete_at i
       else break end
@@ -67,34 +75,18 @@ class Play < Scene
 
   def delete_out_of_range
     @bullets.delete_if do |blt|
-      flag = true
-      flag &= !Sprite.check(blt.sprites, $conf[:move_area_col])
-      flag &= blt.point_out_of_range
+      blt.point_out_of_range && !Sprite.check(blt.sprites, $conf[:move_area_col])
     end
   end
 
   def collision
-    @enemies.size.downto 1 do |enm|
-      @bullets.size.downto 1 do |blt|
-        bc = @bullets[blt - 1].sprites; ec = @enemies[enm - 1].sprites
+    Sprite.check @enemies, @bullets, :hit
+    Sprite.clean [@enemies, @bullets].flatten
 
-        if Sprite.check bc, ec then
-          @bullets.delete_at(blt - 1)
-          @enemies.delete_at(enm - 1) if @enemies[enm - 1].life <= 0
-          break
-        end
-      end
-    end
+    Sprite.check @player, @enemies, :hit
+    Sprite.clean @enemies
 
-    @enemies.size.downto 1 do |enm|
-      pc = @player.sprites; ec = @enemies[enm - 1].sprites
-
-      if Sprite.check pc, ec then
-        @enemies.delete_at(enm - 1) if @enemies[enm - 1].life <= 0
-
-        game_over if @player.life <= 0
-      end
-    end
+    self.game_over if player.vanished?
   end
 
   def game_over
@@ -114,8 +106,12 @@ end
 # 画面に出す情報。DrawProcess側がほとんど本体
 # BackGroundまで用意すると煩雑だからこちらで背景も描画しちゃう？
 class HUD
-  def initialize(scene, player, enemies_bench)
-    @scene = scene; @player = player; @enmies_bench = enemies_bench
+  def initialize(level, player_life, rest_enemies, enemies_position, hiscore)
+    @level = level
+    @player_life = player_life
+    @rest_enemies = rest_enemies # return max and now
+    @enemies_position = enemies_position # point array
+    @hiscore = hiscore
   end
 end
 

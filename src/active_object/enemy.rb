@@ -14,7 +14,7 @@ class Enemy < ActiveObject
     origin_angle = Math.atan2 @velocity.y, @velocity.x
     target_angle = Math.atan2 $player_pnt.y - @point.y, $player_pnt.x - @point.x
 
-    next_angle = range -@max_angle, target_angle - origin_angle, @max_angle
+    next_angle = range -@max_flw_ang, target_angle - origin_angle, @max_flw_ang
 
     @velocity.rotate! next_angle
 
@@ -28,7 +28,7 @@ end
 class RedEnemy < Enemy
   def initialize(point, difficulty)
     super point, Vector2.new( difficulty *3 ), difficulty
-    @max_angle = difficulty / 3 + 0.3
+    @max_flw_ang = difficulty / 3 + 0.3
   end
 
   def move
@@ -43,7 +43,7 @@ end
 class BlueEnemy < Enemy
   def initialize(point, difficulty)
     super point, Vector2.new( difficulty * 6 ), difficulty
-    @max_angle = 0.40
+    @max_flw_ang = 0.40
   end
 
   def move
@@ -60,27 +60,26 @@ class YellowEnemy < Enemy
   def initialize(point, difficulty)
     super point, Vector2.new( difficulty * 6 ), difficulty
 
-    @center = point
-    @move_rad = 100 * difficulty + 50
+    @look_center = point
+
+    @look_angle = 0.0
+    @look_ang_vel = 0.01
     @look_rad = 100 * difficulty + 50
-    @angle = 0.0
-    @ang_vel = 0.01
+    @move_rad = 100 * difficulty + 50
     @find_flag = false
 
-    @rot_ang = 0.0
     @rot_vel = 1.0
-    @max_angle = 0.4
+    @max_flw_ang = 0.4
   end
 
   def move
-    @sprites[0].angle += @rot_vel
+    self.angle += @rot_vel
 
     if @find_flag then
       fallow_player
     else
-      @angle += @ang_vel
-      @point = @center
-      @point += Point.new( Math.cos(@angle), Math.sin(@angle) ) * @move_rad
+      @look_angle += @look_ang_vel
+      @point = @look_center + Point.new( Math.cos(@look_angle), Math.sin(@look_angle) ) * @move_rad
 
       @find_flag = (@point - $player_pnt).size <= @look_rad
     end
@@ -95,26 +94,25 @@ class GreenEnemy < Enemy
   def initialize(point, difficulty)
     super point, Vector2.new( difficulty * 6 ), difficulty
 
-    @arrive_rad = 50 # 次のランダム目的地への到着判定半径
+    @arv_rad = 50 # 次のランダム目的地への到着判定半径
     @look_rad = 100 * difficulty + 50 # プレイヤー発見半径
     @find_flag = false
-    @max_angle = 0.4
+    @max_flw_ang = 0.4
 
-    @rot_ang = 0
     @rot_vel = 1
 
     set_next
   end
 
   def move
-    @sprites[0].angle += @rot_vel
+    self.angle += @rot_vel
 
     if @find_flag then
       fallow_player
     else
       @point += @velocity
 
-      set_next if (@point - @next_point).size < @arrive_rad
+      set_next if (@point - @next_point).size < @arv_rad
 
       @find_flag = (@point - $player_pnt).size < @look_rad
       @velocity *= 0.8 if @find_flag

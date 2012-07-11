@@ -48,9 +48,13 @@ class HUD
   @@image = Image.load('./img/play_background.png')
 
   def draw
-    # player life
-    # rest enemies
-    # hiscore
+    Window.draw_font 10, 60, "Lv. " + @level.to_s, @@font
+    Window.draw_font 10, 80, "Life               ", + @player_life.to_s, @@font
+    Window.draw_font 10, 100,"Hiscore " + @hiscore.to_s, @@font
+
+    # enemies_mapping
+    # Life Gage
+    # Rest Enemy Gage
 
     Window.draw *($conf[:draw_gap].to_a), @@image, 0
 
@@ -59,13 +63,13 @@ class HUD
 end
 
 
-class ActiveObject
+class ActiveObject < Sprite
   def draw
-    @sprites.each{ |spr| spr.x += $conf[:draw_gap].x; spr.y += $conf[:draw_gap].y }
+    @x += $conf[:draw_gap].x; @y += $conf[:draw_gap].y
 
-    Sprite.draw @sprites
+    super.draw
 
-    @sprites.each{ |spr| spr.x -= $conf[:draw_gap].x; spr.y -= $conf[:draw_gap].y }
+    @x -= $conf[:draw_gap].x; @y -= $conf[:draw_gap].y
   end
 end
 
@@ -73,18 +77,23 @@ end
 class Player < ActiveObject
   @@image = Image.load('./img/player.png')
 
-  def sprite_init
-    tmp = Sprite.new(*@point.to_a, @@image)
-    tmp.collision = [
-                     [ 22, 22, 22 ],
-                     [ 17, 0, 0, 28, 35, 28 ],
-                     [ 11, 30, 24, 47 ],
-                     [ 18, 56, 11, 30, 24, 47 ]
-                    ]
-    tmp.z = 100
-    tmp.center_x = @@image.width / 2
-    tmp.center_y = @@image.height / 2
-    @sprites << tmp
+  def static_init
+    self.x = @point.x
+    self.y = @point.y
+    self.z = 100
+
+    # 衝突範囲が複数あるから、それらに共通する回転の中心を与えなければいけない。
+    self.center_x = @@image.width / 2
+    self.center_y = @@image.height / 2
+
+    self.collision = [
+                      [ 22, 22, 22 ],
+                      [ 17, 0, 0, 28, 35, 28 ],
+                      [ 11, 30, 24, 47 ],
+                      [ 18, 56, 11, 30, 24, 47 ]
+                     ]
+
+    self.image = @@image
   end
 end
 
@@ -92,11 +101,14 @@ end
 class Bullet < ActiveObject
   @@image = Image.load('./img/red_enemy.png')
 
-  def sprite_init
-    tmp = Sprite.new(*@point.to_a, @@image)
-    tmp.collision = [ 22, 22, 22 ]
-    tmp.z = 100
-    @sprites << tmp
+  def static_init
+    self.x = @point.x
+    self.y = @point.y
+    self.z = 100
+
+    self.collision = [ 22, 22, 22 ]
+
+    self.image = @@image
   end
 end
 
@@ -104,11 +116,14 @@ end
 class RedEnemy < Enemy
   @@image = Image.load('./img/red_enemy.png')
 
-  def sprite_init
-    tmp = Sprite.new(*@point.to_a, @@image)
-    tmp.collision = [22, 22, 22]
-    tmp.z = 10
-    @sprites << tmp
+  def static_init
+    self.x = @point.x
+    self.y = @point.y
+    self.z = 100
+
+    self.image = @@image
+
+    self.collision = [22, 22, 22]
   end
 end
 
@@ -116,11 +131,14 @@ end
 class BlueEnemy < Enemy
   @@image = Image.load('./img/blue_enemy.png')
 
-  def sprite_init
-    tmp = Sprite.new(*@point.to_a, @@image)
-    tmp.collision = [14, 14, 14]
-    tmp.z = 10
-    @sprites << tmp
+  def static_init
+    self.x = @point.x
+    self.y = @point.y
+    self.z = 100
+
+    self.collision = [14, 14, 14]
+
+    self.image = @@image
   end
 end
 
@@ -128,23 +146,28 @@ end
 class YellowEnemy < Enemy
   @@image = Image.load('./img/yellow_enemy.png')
 
-  def sprite_init
-    tmp = Sprite.new(*@point.to_a, @@image)
-    tmp.collision = [0, 0, 35, 35]
-    tmp.z = 100
-    @sprites << tmp
+  def static_init
+    self.x = @point.x
+    self.y = @point.y
+    self.z = 100
+
+    self.collision = [0, 0, 35, 35]
+
+    self.image = @@image
   end
 end
 
 
 class GreenEnemy < Enemy
   @@image = Image.load('./img/green_enemy.png')
-  @@img_size = Vector2.new @@image.width, @@image.height
 
-  def sprite_init
-    tmp = Sprite.new(*@point.to_a, @@image)
-    tmp.collision = [15, 0, 0, 32, 25, 52]
-    tmp.z = 100
-    @sprites << tmp
+  def static_init
+    self.x = @point.x
+    self.y = @point.y
+    self.z = 100
+
+    self.collision = [15, 0, 0, 32, 25, 52]
+
+    self.image = @@image
   end
 end
