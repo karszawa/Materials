@@ -1,4 +1,4 @@
-require './src/scene'
+require './src/scene/scene'
 
 
 class Ranking < Scene

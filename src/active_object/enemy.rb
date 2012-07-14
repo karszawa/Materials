@@ -42,7 +42,7 @@ end
 # 小さくて速い。
 class BlueEnemy < Enemy
   def initialize(point, difficulty)
-    super point, Vector2.new( difficulty * 6 ), difficulty
+    super point, Vector2.new( difficulty * 4.5 ), difficulty
     @max_flw_ang = 0.40
   end
 
@@ -58,18 +58,20 @@ end
 class YellowEnemy < Enemy
   # point は巡回円の中心とする
   def initialize(point, difficulty)
-    super point, Vector2.new( difficulty * 6 ), difficulty
+    super point, Vector2.new( difficulty * 4 ), difficulty
 
     @look_center = point
 
     @look_angle = 0.0
     @look_ang_vel = 0.01
-    @look_rad = 100 * difficulty + 50
+    @look_rad = 80 * difficulty + 150
     @move_rad = 100 * difficulty + 50
     @find_flag = false
 
     @rot_vel = 1.0
     @max_flw_ang = 0.4
+
+    self.x += @move_rad
   end
 
   def move

@@ -7,18 +7,6 @@ require './src/stdlib'
 require './src/hitrangeview'
 
 
-# Spriteにすると怪しい…
-def hit_range_view(sprites, point)
-  return unless $conf[:debug]
-
-  collisions = sprites.map{ |spr| spr.collision }
-
-  collisions.each { |obj| obj.collision.set *(point + $conf[:draw_gap]).to_a }
-  HitRange.view collisions
-  collisions.each { |obj| obj.sollision.set *point.to_a }
-end
-
-
 class Opening < Scene
   @@font = Font.new 30
 
@@ -50,7 +38,8 @@ class HUD
 
   def draw
     Window.draw_font 10, 60, "Lv. " + @level.call.to_s, @@font, :z => 1000
-    Window.draw_font 10, 80, "Life                     " + @player_life.call[0].to_s, @@font, :z => 1000
+    Window.draw_font 10, 80, "Life", @@font, :z => 1000
+    Window.draw_font 100, 80, @player_life.call[0].to_s, @@font, :z => 1000
     Window.draw_font 10, 100,"Hiscore " + @hiscore.call.to_s, @@font, :z => 1000
 
     # enemies_mapping

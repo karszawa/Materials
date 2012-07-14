@@ -13,6 +13,8 @@ class Player < ActiveObject
     @bullet_velocity = 10
 
     @blt_add = blt_add
+
+    $conf[:draw_gap] = $conf[:show_area_center] - @point
   end
 
   def update

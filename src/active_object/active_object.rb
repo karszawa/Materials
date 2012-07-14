@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require 'dxruby'
 require './src/stdlib'
 
@@ -6,12 +7,18 @@ class ActiveObject < Sprite
   attr_reader :life, :point
 
   def initialize(point, velocity)
+    super
+
     @point = point
     @velocity = velocity
     @life = 0
 
     @start_time = Time.now
     self.static_init
+
+    # Sprite.draw時にはアニメーションが呼ばれるのか
+    # アニメーションが設定してある時はアニメーションが再生されて、
+    # 普通にdrawが呼ばれると好ましい。
   end
 
   def update

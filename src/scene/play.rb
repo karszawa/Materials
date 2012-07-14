@@ -19,6 +19,7 @@ class Play < Scene
 
     @level = 0
     @hiscore = 0
+    @next_state = self
 
     @enemies = []
     @bullets = []
@@ -43,21 +44,17 @@ class Play < Scene
     self.revitalize
     self.delete_out_of_range
 
-    if @enemies.size == 0 && @enemies_bench.size == 0 then
-      return self # DEBUG
+    if @enemies.size + @enemies_bench.size == 0 then
 
       @enemies_bench = read_enemies_from_database @level += 1
       @enemies_max_size = @enemies_bench.size
-      @scene_time = Time.now
 
       # animation
 
-      if @enemies_bench == 0 then
-        self.game_clear
-      end
+      self.game_clear if @enemies_max_size == 0
     end
 
-    self
+    @next_state.class != Play ? @next_state : self
   end
 
   def revitalize
@@ -89,10 +86,12 @@ class Play < Scene
 
   def game_over
     # animation
+    @next_state = Select.new
   end
 
   def game_clear
     # animetion
+    @next_state = Select.new
   end
 
   def draw

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 require 'dxruby'
 require './src/scene/play'
+require './src/scene/select'
+require './src/scene/ranking'
 require './src/drawer'
 
 # 全てのサブクラスは@frameを初期化する必要がある。
@@ -12,12 +14,20 @@ class Game
   def draw
     @frame.draw
   end
+
+  def run
+    Window.loop do
+      self.update
+      self.draw
+    end
+  end
 end
 
 
-class SukkiriShootingGame < Game
+class MaterialsGame < Game
   def initialize
-    @frame = Play.new
+    # @frame = Play.new
+    @frame = Select.new
   end
 end
 
