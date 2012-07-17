@@ -46,7 +46,10 @@ class Player < ActiveObject
   end
 
   def nomal_fire
-    @blt_add.call Bullet.new( @point, @direc * @bullet_velocity)
+    position = @point + @direc * 50
+    position.x += @@image.width / 2
+    position.y += @@image.height / 2
+    @blt_add.call Bullet.new( position, @direc * @bullet_velocity)
   end
 
   def spiral_fire

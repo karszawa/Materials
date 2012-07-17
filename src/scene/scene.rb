@@ -1,10 +1,9 @@
-class Scene
-  def initialize
-    @start_time = Time.now
-  end
+require './src/updater'
 
-  def update
-    self
+class Scene < Updater
+  def initialize
+    super
+    @start_time = Time.now
   end
 
   def elapsed_time

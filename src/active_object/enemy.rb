@@ -71,6 +71,7 @@ class YellowEnemy < Enemy
     @rot_vel = 1.0
     @max_flw_ang = 0.4
 
+    self.angle = rand 360
     self.x += @move_rad
   end
 
@@ -103,6 +104,7 @@ class GreenEnemy < Enemy
 
     @rot_vel = 1
 
+    self.angle = rand 360
     set_next
   end
 

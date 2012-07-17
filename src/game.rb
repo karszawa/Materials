@@ -26,8 +26,8 @@ end
 
 class MaterialsGame < Game
   def initialize
-    # @frame = Play.new
-    @frame = Select.new
+    @frame = Play.new if $conf[:debug]
+    @frame = Select.new unless $conf[:debug]
   end
 end
 

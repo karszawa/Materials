@@ -19,7 +19,7 @@ class Play < Scene
 
     @level = 0
     @hiscore = 0
-    @next_state = self
+    @state = :normal
 
     @enemies = []
     @bullets = []
@@ -30,20 +30,26 @@ class Play < Scene
     @hud = HUD.new( lambda{ @level },
                     lambda{ [ @player.life, $conf[:player_init_life] ] },
                     lambda{ [ @enemies.size, @enemies_max_size ] },
-                    lambda{ @enemies.map{ |enm| enm.point } },
-                    lambda{ @hiscore } )
+                    lambda{ @enemies },
+                    lambda{ @hiscore },
+                    lambda{ @state } )
 
     @enemies_bench = read_enemies_from_database @level
     @enemies_max_size = @enemies_bench.size
   end
 
-  def update
+
+  def normal
     Sprite.update [@player, @enemies, @bullets].flatten
 
     self.collision
     self.revitalize
     self.delete_out_of_range
 
+    self.read_enemies
+  end
+
+  def read_enemies
     if @enemies.size + @enemies_bench.size == 0 then
 
       @enemies_bench = read_enemies_from_database @level += 1
@@ -51,10 +57,12 @@ class Play < Scene
 
       # animation
 
-      self.game_clear if @enemies_max_size == 0
+      return :game_clear if @enemies_max_size == 0
     end
 
-    @next_state.class != Play ? @next_state : self
+    return :game_over if @player.vanished?
+
+    :normal
   end
 
   def revitalize
@@ -80,18 +88,24 @@ class Play < Scene
 
     Sprite.check @player, @enemies, :hit
     Sprite.clean @enemies
-
-    self.game_over if @player.vanished?
   end
 
   def game_over
     # animation
-    @next_state = Select.new
+    Select.new
+  end
+
+  def game_clear_init
+    @game_clear_time = Time.now
+    @wait = 5
   end
 
   def game_clear
-    # animetion
-    @next_state = Select.new
+    return Select.new if @game_clear_time + @wait < Time.now
+
+    Sprite.update [@player, @bullets].flatten
+
+    :game_clear
   end
 
   def draw
@@ -103,12 +117,13 @@ end
 # 画面に出す情報。DrawProcess側がほとんど本体
 # BackGroundまで用意すると煩雑だからこちらで背景も描画しちゃう？
 class HUD
-  def initialize(level, player_life, rest_enemies, enemies_position, hiscore)
+  def initialize(level, player_life, rest_enemies, enemies, hiscore, state)
     @level = level
     @player_life = player_life
     @rest_enemies = rest_enemies # return max and now
-    @enemies_position = enemies_position # point array
+    @enemies = enemies # point array
     @hiscore = hiscore
+    @state = state
   end
 end
 
