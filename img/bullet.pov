@@ -7,7 +7,7 @@
 #include "metals.inc"
 
 
-background{ rgbt<1.0, 1.0, 1.0, 0.0> }
+background{ rgbt<1.0, 0.0, 0.0, 0.0> }
 
 camera
 {
@@ -26,8 +26,10 @@ object{
     	object
     	{
     	    Sphere
-    	    
+    	       
+    	    scale 0.5
        	    translate<0.5, 0.5, -1.1>
+       	          
        	    
        	    material { texture { pigment { color Clear } finish { F_Glass1 } } interior { I_Glass1 fade_color Col_Red_01 } }
     	}
@@ -36,6 +38,5 @@ object{
     scale 1.1
     
                   
-    material{M_Vicks_Bottle_Glass}
-    finish{ ambient 0.55 } 
+    material { texture { pigment { color Clear } finish { F_Glass1 } } interior { I_Glass1 fade_color Col_Red_01 } }
 }

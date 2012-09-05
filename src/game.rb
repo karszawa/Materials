@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 require 'dxruby'
+require './src/scene/opening'
 require './src/scene/play'
 require './src/scene/select'
 require './src/scene/ranking'
@@ -26,8 +27,8 @@ end
 
 class MaterialsGame < Game
   def initialize
-    @frame = Play.new if $conf[:debug]
-    @frame = Select.new unless $conf[:debug]
+    @frame = Play.new
+    # @frame = Opening.new
   end
 end
 

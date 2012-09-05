@@ -1,14 +1,13 @@
-# -*- coding: utf-8 -*-
+# -*- coding: emacs-mule -*-
 require 'dxruby'
 require 'dxrubyex'
+require './dxruby/anime_sprite'
 
 require './src/conf'
 require './src/active_object/active_object'
 require './src/scene/scene'
 require './src/scenario_writer'
 require './src/active_object/player.rb'
-
-
 
 class Array; include ArrayExtension; end
 
@@ -27,24 +26,31 @@ class Play < Scene
 
     @player = Player.new lambda{ |blt| @bullets << blt }
 
-    @hud = HUD.new( lambda{ @level },
-                    lambda{ [ @player.life, $conf[:player_init_life] ] },
-                    lambda{ [ @enemies.size, @enemies_max_size ] },
-                    lambda{ @enemies },
-                    lambda{ @hiscore },
-                    lambda{ @state } )
-
     @enemies_bench = read_enemies_from_database @level
     @enemies_max_size = @enemies_bench.size
+
+    @animations = []
+    # ’Å¨’¤¬’»à’¤ó’¤À’»þ’»à’Ë´’¥¢’¥Ë’¥á’¡¼’¥·’¥ç’¥ó’¤ò’³«’»Ï’¤¹’¤ë
+    # += ’¤Ç’·ë’¹ç’¤¹’¤ë’¤È’¤³’¤Î’¥á’¥½’¥Ã’¥É’¤¬’¾Ã’ÌÇ’¤·’¤Æ’¤·’¤Þ’¤¦
+    def @enemies.dead_animations
+      select(&:vanished?).map do |enm|
+        tmp = AnimeSprite.new
+        tmp.x = enm.x + $conf[:draw_gap].x
+        tmp.y = enm.y + $conf[:draw_gap].y
+        tmp.z = 120
+        tmp.animation_image = @@common_enemy_dead_image
+        tmp.start_animation(5, (0..15).to_a, :vanish)
+      end
+    end
   end
 
-
   def normal
-    Sprite.update [@player, @enemies, @bullets].flatten
+    Sprite.update [@player, @enemies, @bullets, @animations].flatten
+    Sprite.clean @animations
 
     self.collision
     self.revitalize
-    self.delete_out_of_range
+    self.delete_out_of_area
 
     self.read_enemies
   end
@@ -68,25 +74,25 @@ class Play < Scene
   def revitalize
     now_time = Time.now - @start_time
 
-    (@enemies_bench.size - 1).downto 0 do |i|
-      if @enemies_bench[i].time <= now_time then
-        @enemies << @enemies_bench[i].enemy
-        @enemies_bench.delete_at i
-      else break end
-    end
+    # += ’¤Ç’·ë’¹ç’¤¹’¤ë’¤È’ÆÃ’°Û’¥á’¥½’¥Ã’¥É’¤¬’¾Ã’ÌÇ’¤·’¤Æ’¤·’¤Þ’¤¦
+    @enemies.concat @enemies_bench.delete_heads!{|o| o.time<=now_time}.map(&:enemy)
   end
 
-  def delete_out_of_range
-    @bullets.delete_if do |blt|
-      blt.point_out_of_range && !Sprite.check(blt, $conf[:move_area_col])
-    end
+  def delete_out_of_area
+    range = $conf[:move_area_col]
+
+    @bullets.select{ |o| o.out_of_area && !Sprite.check(o, range) }.each(&:out)
+
+    Sprite.clean @bullets
   end
 
   def collision
     Sprite.check @enemies, @bullets, :hit
+    @animations += @enemies.dead_animations
     Sprite.clean [@enemies, @bullets].flatten
 
     Sprite.check @player, @enemies, :hit
+    @animations += @enemies.dead_animations
     Sprite.clean @enemies
   end
 
@@ -107,24 +113,4 @@ class Play < Scene
 
     :game_clear
   end
-
-  def draw
-    Sprite.draw [@player, @enemies, @bullets, @hud].flatten
-  end
 end
-
-
-# ç”»é¢ã«å‡ºã™æƒ…å ±ã€‚DrawProcesså´ãŒã»ã¨ã‚“ã©æœ¬ä½“
-# BackGroundã¾ã§ç”¨æ„ã™ã‚‹ã¨ç…©é›‘ã ã‹ã‚‰ã“ã¡ã‚‰ã§èƒŒæ™¯ã‚‚æç”»ã—ã¡ã‚ƒã†ï¼Ÿ
-class HUD
-  def initialize(level, player_life, rest_enemies, enemies, hiscore, state)
-    @level = level
-    @player_life = player_life
-    @rest_enemies = rest_enemies # return max and now
-    @enemies = enemies # point array
-    @hiscore = hiscore
-    @state = state
-  end
-end
-
-

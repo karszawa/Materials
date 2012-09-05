@@ -49,16 +49,29 @@ class Player < ActiveObject
     position = @point + @direc * 50
     position.x += @@image.width / 2
     position.y += @@image.height / 2
+
     @blt_add.call Bullet.new( position, @direc * @bullet_velocity)
   end
 
   def spiral_fire
+    num = 20
+
+    position = @point + Point.new(@@image.width / 2, @@image.height / 2)
+
+    num.times do |i|
+      direc = Vector2.polar(i * 2.0 * Math.PI / num, 1.0)
+      @blt_add.call Bullet.new( position + direc * 50, direc * @bullet_velocity )
+    end
+
+    @life -= 20
+
+    self.vanish if @life <= 0
   end
 
   def hit(other)
     @life -= 1
 
-    self.vanish if @life == 0
+    self.vanish if @life <= 0
   end
 end
 

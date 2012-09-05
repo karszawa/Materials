@@ -11,14 +11,20 @@ class Enemy < ActiveObject
   end
 
   def fallow_player
-    origin_angle = Math.atan2 @velocity.y, @velocity.x
-    target_angle = Math.atan2 $player_pnt.y - @point.y, $player_pnt.x - @point.x
+    origin_angle = Math.atan2 *@velocity.to_a.reverse
+    target_angle = Math.atan2 *($player_pnt - @point).to_a.reverse
 
     next_angle = range -@max_flw_ang, target_angle - origin_angle, @max_flw_ang
 
     @velocity.rotate! next_angle
 
     @point += @velocity
+  end
+
+  def static_init
+    self.x = @point.x
+    self.y = @point.y
+    self.z = 100
   end
 end
 
@@ -32,7 +38,7 @@ class RedEnemy < Enemy
   end
 
   def move
-    fallow_player
+    self.fallow_player
   end
 end
 
@@ -47,7 +53,7 @@ class BlueEnemy < Enemy
   end
 
   def move
-    fallow_player
+    self.fallow_player
   end
 end
 
@@ -79,10 +85,10 @@ class YellowEnemy < Enemy
     self.angle += @rot_vel
 
     if @find_flag then
-      fallow_player
+      self.fallow_player
     else
       @look_angle += @look_ang_vel
-      @point = @look_center + Point.new( Math.cos(@look_angle), Math.sin(@look_angle) ) * @move_rad
+      @point = @look_center + Point.polar(@look_angle, @move_rad)
 
       @find_flag = (@point - $player_pnt).size <= @look_rad
     end
@@ -105,18 +111,18 @@ class GreenEnemy < Enemy
     @rot_vel = 1
 
     self.angle = rand 360
-    set_next
+    self.set_next
   end
 
   def move
     self.angle += @rot_vel
 
     if @find_flag then
-      fallow_player
+      self.fallow_player
     else
       @point += @velocity
 
-      set_next if (@point - @next_point).size < @arv_rad
+      self.set_next if (@point - @next_point).size < @arv_rad
 
       @find_flag = (@point - $player_pnt).size < @look_rad
       @velocity *= 0.8 if @find_flag

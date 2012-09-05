@@ -7,6 +7,6 @@ class Scene < Updater
   end
 
   def elapsed_time
-    (Time.new - @start_time).to_f
+    (Time.now - @start_time).to_f
   end
 end

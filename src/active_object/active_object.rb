@@ -15,10 +15,6 @@ class ActiveObject < Sprite
 
     @start_time = Time.now
     self.static_init
-
-    # Sprite.draw時にはアニメーションが呼ばれるのか
-    # アニメーションが設定してある時はアニメーションが再生されて、
-    # 普通にdrawが呼ばれると好ましい。
   end
 
   def update
@@ -29,11 +25,15 @@ class ActiveObject < Sprite
     self.y = @point.y
   end
 
-  def point_out_of_range
+  def out_of_area
     min = $conf[:move_area_min]
     max = $conf[:move_area_max]
 
     @point.x < min.x || max.x < @point.x || @point.y < min.y || max.y < @point.y
+  end
+
+  def out
+    self.vanish
   end
 
   def move
@@ -46,6 +46,10 @@ class ActiveObject < Sprite
     self.vanish
   end
 
-  def static_init; end
+  def static_init
+    self.x = @point.x
+    self.y = @point.y
+    self.z = 100
+  end
 end
 

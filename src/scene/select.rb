@@ -1,5 +1,5 @@
 require 'dxruby'
-require 'pry'
+require 'pry' if $conf[:debug]
 require './src/scene/scene.rb'
 
 

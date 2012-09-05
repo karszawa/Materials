@@ -2,10 +2,6 @@ require 'dxruby'
 require './src/game'
 
 
-game = SukkiriShootingGame.new
+MaterialsGame.new.run
 
-Window.loop do
-  game.update
-  game.draw
-end
 

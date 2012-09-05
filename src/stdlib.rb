@@ -25,6 +25,45 @@ def range(lower, val, upper)
 end
 
 
+class Float
+  def to_rad
+    self * Math.PI / 180.0
+  end
+
+  def to_deg
+    self * 180.0 / Math.PI
+  end
+end
+
+
+class Array
+  # 配列の先頭から走査し条件が真になる要素を取り除く。
+  # 偽になる要素が現れた時走査をやめる。
+  # また取り除いた要素を返す。
+  def delete_heads(&blk)
+    ret = []
+    self.each do |obj|
+      if yield obj then ret << obj
+      else break end
+    end
+    ret
+  end
+
+  def delete_heads!(&blk)
+    ret = []
+    self.reverse!
+    self.size.downto 1 do |i|
+      if yield self[i-1] then
+        ret << self[i-1]
+        self.delete_at i-1
+      else break end
+    end
+    self.reverse!
+    ret
+  end
+end
+
+
 class Vector2
   attr_accessor :x, :y
 
@@ -80,8 +119,6 @@ class Vector2
 
     @x *= ratio
     @y *= ratio
-
-    self
   end
 
   def rotate(arg)
@@ -92,7 +129,8 @@ class Vector2
     next_x = @x * Math.cos(arg) - @y * Math.sin(arg)
     next_y = @x * Math.sin(arg) + @y * Math.cos(arg)
 
-    @x = next_x; @y = next_y
+    @x = next_x
+    @y = next_y
 
     self
   end
