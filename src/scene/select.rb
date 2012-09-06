@@ -5,7 +5,7 @@ require './dxruby/scene'
 
 class SelectScene < Scene::Base
   def init
-    @now_choise = 0
+    @now_choice = 0
     @choices_list = %w[ Play Ranking ]
     @scene_list = [ PlayScene, RankingScene ]
     @weight = 0.1

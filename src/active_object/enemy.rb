@@ -154,9 +154,9 @@ class GreenEnemy < Enemy
   end
 
   def rand_point
-    rect = $conf[:move_area_max] - $conf[:move_area_min]
-    x = rand(rect.x) + $conf[:move_area_min].x
-    y = rand(rect.y) + $conf[:move_area_min].y
+    rect = $conf.move_area_max - $conf.move_area_min
+    x = rand(rect.x) + $conf.move_area_min.x
+    y = rand(rect.y) + $conf.move_area_min.y
     Point.new x, y
   end
 

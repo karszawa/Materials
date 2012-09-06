@@ -8,7 +8,7 @@ class ActiveObject < AnimeSprite
   attr_reader :life, :point
 
   def initialize(point, velocity)
-    super @point.x, @point.y, 100
+    super point.x, point.y, 100
 
     @point = point
     @velocity = velocity
@@ -26,7 +26,7 @@ class ActiveObject < AnimeSprite
     self.x = @point.x; self.y = @point.y;
   end
 
-  def out
+  def out(other = nil)
     self.vanish
   end
 

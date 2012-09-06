@@ -14,6 +14,6 @@ class OpeningScene < Scene::Base
   def render
     rest_time = @trans_time - elap_time
 
-    Window.draw_font(0, 0, "Now Opening... #{wait_time}", @@font)
+    Window.draw_font(0, 0, "Now Opening... #{rest_time.ceil}", @@font)
   end
 end

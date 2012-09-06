@@ -6,7 +6,7 @@ require './src/active_object/active_object'
 class Player < ActiveObject
   # 発射した弾丸をPlay#bulletsに渡すラムダを引数に持つ
   def initialize(blt_add)
-    super $conf.player_init_point, Vector2.new(0, 0)
+    super $conf.player_init_point, Vector2.new
 
     @life = $conf.player_init_life
     @direc = Vector2.new(0, 1)
