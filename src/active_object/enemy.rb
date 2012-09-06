@@ -20,12 +20,6 @@ class Enemy < ActiveObject
 
     @point += @velocity
   end
-
-  def static_init
-    self.x = @point.x
-    self.y = @point.y
-    self.z = 100
-  end
 end
 
 # 鈍速、巨大
@@ -39,6 +33,13 @@ class RedEnemy < Enemy
 
   def move
     self.fallow_player
+  end
+
+
+  @@image = Image.load('./img/red_enemy.png')
+  def init
+    self.collision = [ 22, 22, 22 ]
+    self.image = @@image
   end
 end
 
@@ -54,6 +55,13 @@ class BlueEnemy < Enemy
 
   def move
     self.fallow_player
+  end
+
+
+  @@image = Image.load('./img/blue_enemy.png')
+  def init
+    self.collision = [14, 14, 14]
+    self.image = @@image
   end
 end
 
@@ -92,6 +100,13 @@ class YellowEnemy < Enemy
 
       @find_flag = (@point - $player_pnt).size <= @look_rad
     end
+  end
+
+
+  @@image = Image.load('./img/yellow_enemy.png')
+  def init
+    self.collision = [ 0, 0, 35, 35 ]
+    self.image = @@image
   end
 end
 
@@ -143,5 +158,12 @@ class GreenEnemy < Enemy
     x = rand(rect.x) + $conf[:move_area_min].x
     y = rand(rect.y) + $conf[:move_area_min].y
     Point.new x, y
+  end
+
+
+  @@image = Image.load('./img/green_enemy.png')
+  def init
+    self.collision = [ 15, 0, 0, 32, 25, 52 ]
+    self.image = @@image
   end
 end

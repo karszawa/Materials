@@ -1,27 +1,34 @@
 require 'dxruby'
-require 'pry' if $conf[:debug]
-require './src/scene/scene.rb'
+require 'pry' if $conf.debug
+require './dxruby/scene'
 
 
-class Select < Scene
-  def initialize
-    super
-
-    @now_select = 0
-    @str_list = %w[ Play Ranking ]
-    @frame_class_list = [ Play, Ranking ]
-    @wait = 0.1
-    @prev_select_time = Time.now - @wait
+class SelectScene < Scene::Base
+  def init
+    @now_choise = 0
+    @choices_list = %w[ Play Ranking ]
+    @scene_list = [ PlayScene, RankingScene ]
+    @weight = 0.1
+    @free_time = Time.now - @weight
   end
 
   def update
-    if @prev_select_time + @wait < Time.now and Input.y != 0 then
-      @prev_select_time = Time.now
-      @now_select = (@now_select + Input.y) % @str_list.size
+    if @free_time < Time.now and Input.y != 0 then
+      @free_time = Time.now + @weight
+      @now_choice = (@now_choice + Input.y) % @choices_list.size
     end
 
-    return @frame_class_list[@now_select].new if Input.keyPush?(K_RETURN)
+    @next_scene = @scene_list[@now_choice].new if Input.key_push?(K_RETURN)
+  end
 
-    self
+  @@font = Font.new 30
+  def render
+    base_x = 150; base_y = 100;
+
+    @choices_list.each_with_index do |name, idx|
+      dx = (@now_choice == idx ? -50 : 0)
+
+      Window.draw_font(base_x + dx, base_y += 50, name, @@font)
+    end
   end
 end

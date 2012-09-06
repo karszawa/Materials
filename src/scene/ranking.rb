@@ -1,8 +1,5 @@
-require './src/scene/scene'
+require './dxruby/scene'
 
 
-class Ranking < Scene
-  def initialize
-    super
-  end
+class RankingScene < Scene::Base
 end

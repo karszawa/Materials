@@ -1,16 +1,19 @@
-require './src/scene/scene'
+require './dxruby/scene'
 
 
-class Opening < Scene
-  def initialize
-    super
-
-    @call_me_again_time = 5
+class OpeningScene < Scene::Base
+  def init
+    @trans_time = 5.0
   end
 
   def update
-    return Select.new if @call_me_again_time < elapsed_time
+    @next_scene = SelectScene.new if @trans_time < elap_time
+  end
 
-    self
+  @@font = Font.new(30)
+  def render
+    rest_time = @trans_time - elap_time
+
+    Window.draw_font(0, 0, "Now Opening... #{wait_time}", @@font)
   end
 end
