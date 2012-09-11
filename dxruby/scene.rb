@@ -4,17 +4,20 @@
 require 'dxruby'
 
 module Scene
-  class Exit
-  end
+  class Exit; end
 
   class Base
     attr_accessor :next_scene
     attr_reader :frame_counter
 
-    def initialize
+    def initialize(hash = nil)
       @next_scene = nil
       @frame_counter = 0
-      init
+
+      init hash if hash
+      init unless hash
+
+      @start_time = Time.now
     end
 
     def __update
@@ -30,10 +33,12 @@ module Scene
     def update; end
 
     def render; end
+
+    def elap_time; Time.now - @start_time; end
   end
 
   def self.main_loop(first_scene, fps = 60, step = 1)
-    scene = first_scene.new
+    scene = first_scene
     default_step = step
 
     Window.loop do

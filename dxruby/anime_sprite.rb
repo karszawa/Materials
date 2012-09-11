@@ -1,8 +1,9 @@
 class AnimeSprite < Sprite
-  def initialize(x=0, y=0, image=nil)
+  def initialize(x=0, y=0, z=0, image=nil)
     super
     self.x = x
     self.y = y
+    self.z = z
     self.animation_image = image if image
     @anime_sprite_count = 0
     @anime_sprite_frame_count = 1

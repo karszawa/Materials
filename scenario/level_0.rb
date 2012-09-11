@@ -18,6 +18,6 @@ Yellow time, point_x, point_y, difficulty
 
 
 100.times do
-  Blue 10, rand($conf[:move_area_max].x), rand($conf[:move_area_max].y), rand
-  Green 25, rand($conf[:move_area_max].x), rand($conf[:move_area_max].y), rand
+  Blue 10, rand($conf.move_area_max.x), rand($conf.move_area_max.y), rand
+  Green 25, rand($conf.move_area_max.x), rand($conf.move_area_max.y), rand
 end
