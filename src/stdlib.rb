@@ -122,7 +122,7 @@ class Vector2
   end
 
   def rotate(arg)
-    self.dup.rotate!
+    self.dup.rotate!(arg)
   end
 
   def rotate!(arg)

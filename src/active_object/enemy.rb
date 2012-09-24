@@ -8,6 +8,13 @@ class Enemy < ActiveObject
     super point, velocity
 
     @difficulty = difficulty
+
+    add_animation :advent, 1, (0..13).to_a, :to_fight_mode
+    add_animation :exit, 1, (0..7).to_a, :vanish
+    add_animation :fight, 1, [0], :fight
+
+    self.fighting = false
+    start_animation :advent, @@advent_image
   end
 
   def fallow_player
@@ -16,11 +23,22 @@ class Enemy < ActiveObject
 
     next_angle = range -@max_flw_ang, target_angle - origin_angle, @max_flw_ang
 
-    @velocity.rotate! next_angle
+    # 慣性が働くようにしている
+    next_vel = @velocity + @velocity.rotate(next_angle)
+    next_vel.size = @velocity.size
 
-    @point += @velocity
+    @point += (@velocity = next_vel)
   end
+
+  def hit(other)
+    self.fighting = false
+    start_animation :exit, @@exit_image
+  end
+
+  @@advent_image = Image.load_tiles("./img/pipo-btleffect007.png", 14, 1)
+  @@exit_image = Image.load_tiles("./img/pipo-btleffect008.png", 8, 1)
 end
+
 
 # 鈍速、巨大
 # プレイヤーを追う。
@@ -38,8 +56,13 @@ class RedEnemy < Enemy
 
   @@image = Image.load('./img/red_enemy.png')
   def init
-    self.collision = [ 22, 22, 22 ]
+    self.collision = [ 0, 0, 22 ]
     self.image = @@image
+  end
+
+  def to_fight_mode
+    self.fighting = true
+    start_animation :fight, [@@image]
   end
 end
 
@@ -60,8 +83,13 @@ class BlueEnemy < Enemy
 
   @@image = Image.load('./img/blue_enemy.png')
   def init
-    self.collision = [14, 14, 14]
+    self.collision = [0, 0, 14]
     self.image = @@image
+  end
+
+  def to_fight_mode
+    self.fighting = true
+    start_animation :fight, [@@image]
   end
 end
 
@@ -105,8 +133,13 @@ class YellowEnemy < Enemy
 
   @@image = Image.load('./img/yellow_enemy.png')
   def init
-    self.collision = [ 0, 0, 35, 35 ]
+    self.collision = [ -17, -17, 17, 17 ]
     self.image = @@image
+  end
+
+  def to_fight_mode
+    self.fighting = true
+    start_animation :fight, [@@image]
   end
 end
 
@@ -163,7 +196,12 @@ class GreenEnemy < Enemy
 
   @@image = Image.load('./img/green_enemy.png')
   def init
-    self.collision = [ 15, 0, 0, 32, 25, 52 ]
+    self.collision = [ -12, -26, -26, 6, -1, 26 ]
     self.image = @@image
+  end
+
+  def to_fight_mode
+    self.fighting = true
+    start_animation :fight, [@@image]
   end
 end

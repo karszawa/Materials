@@ -22,6 +22,8 @@ class PlayScene < Scene::Base
 
     @player = Player.new(lambda{ |blt| @bullets << blt })
 
+    @panels = []
+
 
 
     # ’Àï’¾ì’¤Ë’Éü’µ¢’¤·’¤Æ’¤¤’¤ëenemies’¤Îenemy’¥ª’¥Ö’¥¸’¥§’¥¯’¥È
@@ -44,10 +46,11 @@ class PlayScene < Scene::Base
   end
 
   def update
-    Sprite.update [@player, @enemies, @bullets]
+    Sprite.update [@player, @enemies, @bullets, @panels]
     # Sprite.clean [@enemeis, @bullets]
     Sprite.clean @enemies
     Sprite.clean @bullets
+    Sprite.clean @panels
 
     Sprite.check @enemies, @bullets, :hit
     Sprite.check @player, @enemies, :hit
@@ -60,6 +63,8 @@ class PlayScene < Scene::Base
 
       @next_scene =
         GameClearScene.new(player: @player, time: @time) if @enemies.size == 0
+
+      @panels << DynamicMessagePanel.new(:levelup) unless @next_scene
     end
 
     @next_scene = GameOverScene.new(enemies: @enemies) if @player.vanished?
@@ -70,24 +75,68 @@ class PlayScene < Scene::Base
   @@completed_font = Font.new 50
   @@background_image = Image.load('./img/play_background.png')
   @@life_bar = Image.load('./img/life_bar.png')
+  @@waku = Image.load('./img/waku.png')
   def render
-    Sprite.draw [@player, @enemies, @bullets]
+    Sprite.draw [@player, @enemies, @bullets, @panels]
 
+    Window.draw_font 10, 160, "Lv. " + @level.to_s, @@font, :z => 1000
+    Window.draw_font 10, 180, "Life", @@font, :z => 1000
+    Window.draw_font 50, 180, @player.life.to_s, @@font, :z => 1000
 
-    Window.draw_font 10, 60, "Lv. " + @level.to_s, @@font, :z => 1000
-    Window.draw_font 10, 80, "Life", @@font, :z => 1000
-    Window.draw_font 120, 80, @player.life.to_s, @@font, :z => 1000
+    # message_board
+    Window.draw 5, 5, @@waku, 2400
 
-    # enemies_mapping
-    @enemies.working.each do |enm|
-      draw_point = enm.point / 20 + Point.new(20, 0)
-      Window.draw_scale( *draw_point.to_a, enm.image, 0.1, 0.1, 0, 0, 2500 )
+    @panels.each do |panel|
+      scale = [0.104 * panel.scale_x, 0.104 * panel.scale_y]
+      Window.draw_scale(5, 5, panel.image, *scale, 0, 0, 2500)
     end
 
-    # Life gage
-    Window.draw_scale( 50, 80, @@life_bar, @player.life / 300.0, 1, 0, 0, 2000)
+    (@enemies.working + @bullets + [@player]).each do |obj|
+      draw_point = obj.point / 10 + Point.new(5, 5)
+      Window.draw_scale( *draw_point.to_a, obj.image, 0.15, 0.15, 0, 0, 2500 )
+    end
+
+    # Life gage 50,180
+    Window.draw_scale( 90, 180, @@life_bar, @player.life / 300.0, 1, 0, 0, 2000)
     # Rest Enemies
 
     Window.draw *($conf.draw_gap.to_a), @@background_image, 0
+
+
+    debug_string = "load=" + Window.get_load.round.to_s + "%"
+    Window.draw_font 450, 10, debug_string, @@font, :z => 5000 if $conf.debug
   end
 end
+
+
+class DynamicMessagePanel < AnimeSprite
+  @@images = {
+    levelup: Array.new(10) do |i|
+      Image.load("./img/random_stripe/random_stripe" + min(i, 9).to_s + ".png")
+    end
+  }
+
+  def initialize(various)
+    super 0, 0, 10
+
+    @var = various
+
+    add_animation :levelup, 5, (0..9).to_a + [9] * 10, :vanish
+
+    self.animation_image = @@images[@var]
+    self.center_x = 0
+    self.center_y = 0
+    self.scale_x = 1920.0 / @@images[@var][0].width
+    self.scale_y = 1440.0 / @@images[@var][0].height
+
+    start_animation(@var)
+  end
+
+  def draw
+    self.x = $conf.draw_gap.x
+    self.y = $conf.draw_gap.y
+
+    super
+  end
+end
+

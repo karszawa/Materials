@@ -15,6 +15,9 @@ class Player < ActiveObject
     @blt_add = blt_add
 
     $conf.draw_gap = $conf.show_area_center - @point
+
+    add_animation :fight, 1, [0], :fight
+    start_animation :fight
   end
 
   def update
@@ -77,14 +80,8 @@ class Player < ActiveObject
 
   @@image = Image.load('./img/player.png')
   def init
-    self.collision = [
-                      [ 22, 22, 22 ],
-                      [ 17, 0, 0, 28, 35, 28 ],
-                      [ 11, 30, 24, 47 ],
-                      [ 18, 56, 11, 30, 24, 47 ]
-                     ]
-
-    self.image = @@image
+    self.collision = [[ 0, -29, -18, 1, 18, 1 ], [ 0, 29, -10, 1, 10, 1 ]]
+    self.animation_image = [@@image]
   end
 end
 
@@ -92,12 +89,28 @@ end
 class Bullet < ActiveObject
   def initialize(point, velocity)
     super point, velocity
+
+    add_animation :exit, 1, (0..7).to_a, :vanish
+    add_animation :fight, 1, [0], :fight
+    start_animation :fight, [@@image]
   end
 
-
   @@image = Image.load('./img/bullet.png')
+  @@exit_image = Image.load_tiles("./img/pipo-btleffect008.png", 8, 1)
   def init
-    self.collision = [ 11, 11, 11 ]
-    self.image = @@image
+    self.collision = [ 0, 0, 11 ]
+    self.animation_image = [@@image]
+  end
+
+  # 敵と弾が光ったら鬱陶しいか？
+=begin
+  def hit(other)
+    self.fighting = false
+    start_animation :exit, @@exit_image
+  end
+=end
+  def out(other=nil)
+    self.fighting = false
+    start_animation :exit, @@exit_image
   end
 end

@@ -72,7 +72,7 @@ class AnimeSprite < Sprite
               self.send @anime_sprite_next
             end
           end
-          @anime_sprite_count = 0 
+          @anime_sprite_count = 0
         end
       end
       self.image = @anime_sprite_animation_image[@anime_sprite_animation_pattern[@anime_sprite_count / @anime_sprite_frame_count]]
@@ -93,7 +93,7 @@ class AnimeSprite < Sprite
           @anime_sprite_count = 0
         end
       end
-      self.image = @anime_sprite_animation_image[@anime_sprite_count / @anime_sprite_frame_count]
+    self.image = @anime_sprite_animation_image[@anime_sprite_count / @anime_sprite_frame_count]
     end
     super
   end
