@@ -48,12 +48,12 @@ class ActiveObject < AnimeSprite
 
   def draw
     self.x += $conf.draw_gap.x; self.y += $conf.draw_gap.y;
-    self.x -= self.image.width / 2; self.y -= self.image.height / 2;
+    self.x -= self.image.width/2; self.y -= self.image.height/2;
 
     super
 
     self.x -= $conf.draw_gap.x; self.y -= $conf.draw_gap.y;
-    self.x += self.image.width / 2; self.y += self.image.height / 2;
+    self.x += self.image.width/2; self.y += self.image.height/2;
   end
 
   def fighting?

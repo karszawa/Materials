@@ -106,4 +106,8 @@ class AnimeSprite < Sprite
     @anime_sprite_animation_image = v
     self.image = v[0]
   end
+
+  def progress
+    [@anime_sprite_count/@anime_sprite_frame_count, @anime_sprite_animation_pattern.size]
+  end
 end

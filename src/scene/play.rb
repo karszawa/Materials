@@ -41,7 +41,7 @@ class PlayScene < Scene::Base
 
     # @bullets#delete_outer => ’¾ì’³°’¤Ë’½Ð’¤¿bullets’¤ò’ºï’½ü’¤¹’¤ë
     def @bullets.delete_outer
-      Sprite.check($conf.move_area_col, self, nil, :out)
+      Sprite.check($conf.divid_line, self, nil, :out)
     end
   end
 
@@ -88,7 +88,8 @@ class PlayScene < Scene::Base
 
     @panels.each do |panel|
       scale = [0.104 * panel.scale_x, 0.104 * panel.scale_y]
-      Window.draw_scale(5, 5, panel.image, *scale, 0, 0, 2500)
+      Window.draw_ex(5,5,panel.image,scale_x: scale[0], scale_y: scale[1],
+                     center_x: 0, center_y: 0, alpha: panel.alpha, z: 2500)
     end
 
     (@enemies.working + @bullets + [@player]).each do |obj|
@@ -136,6 +137,8 @@ class DynamicMessagePanel < AnimeSprite
     self.x = $conf.draw_gap.x
     self.y = $conf.draw_gap.y
 
+    p = 1.0*(progress[0]-@@images[@var].size-1)/(progress[1]-@@images[@var].size)
+    self.alpha = 255.0 * (1 - p) if 0 <= p
     super
   end
 end

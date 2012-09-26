@@ -56,8 +56,9 @@ class RedEnemy < Enemy
 
   @@image = Image.load('./img/red_enemy.png')
   def init
-    self.collision = [ 0, 0, 22 ]
+    self.collision = [ 22, 22, 22 ]
     self.image = @@image
+    @width = 44; @height = 44;
   end
 
   def to_fight_mode
@@ -80,11 +81,11 @@ class BlueEnemy < Enemy
     self.fallow_player
   end
 
-
   @@image = Image.load('./img/blue_enemy.png')
   def init
-    self.collision = [0, 0, 14]
+    self.collision = [14, 14, 14]
     self.image = @@image
+    @width = 28; @height = 28;
   end
 
   def to_fight_mode
@@ -133,8 +134,9 @@ class YellowEnemy < Enemy
 
   @@image = Image.load('./img/yellow_enemy.png')
   def init
-    self.collision = [ -17, -17, 17, 17 ]
+    self.collision = [ 0, 0, 34, 34 ]
     self.image = @@image
+    @width = 34; @height = 34;
   end
 
   def to_fight_mode
@@ -187,18 +189,18 @@ class GreenEnemy < Enemy
   end
 
   def rand_point
-    rect = $conf.move_area_max - $conf.move_area_min
-    x = rand(rect.x) + $conf.move_area_min.x
-    y = rand(rect.y) + $conf.move_area_min.y
+    x = rand($conf.active_field.x)
+    y = rand($conf.active_field.y)
     Point.new x, y
   end
 
-
   @@image = Image.load('./img/green_enemy.png')
   def init
-    self.collision = [ -12, -26, -26, 6, -1, 26 ]
+    self.collision = [14, 0, 0, 32, 25, 52]
     self.image = @@image
+    @width = 52; @height = 52;
   end
+
 
   def to_fight_mode
     self.fighting = true
