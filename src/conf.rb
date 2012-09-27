@@ -26,3 +26,7 @@ $conf.show_area_center = $conf.window_size / 2
 $conf.enem_depth = 100
 
 
+
+def $conf.rand_point
+  [rand($conf.active_field.x), rand($conf.active_field.y)]
+end

@@ -31,7 +31,7 @@ class Player < ActiveObject
     # point
     @point += @velocity
     llimit = Point.new(self.image.width,self.image.height)*0.5
-    ulimit = $conf.active_field - Point.new(self.image.width,self.image.height)*1.5
+    ulimit = $conf.active_field - Point.new(self.image.width,self.image.height)*0.5
     @point = Point.catch(llimit, @point, ulimit)
 
     # angle
@@ -60,11 +60,12 @@ class Player < ActiveObject
   end
 
   def spiral_fire
+    bullet_num = 20
     base_point = @point + Point.new(@@image.width / 2, @@image.height / 2)
 
-    20.times do |i|
-      angle = Vector2.polar(i * 2.0 * Math.PI / num, 1.0)
-      point = base_point + direc * 50
+    bullet_num.times do |i|
+      angle = Vector2.polar(i * 2.0 * Math.PI / bullet_num, 1.0)
+      point = base_point + angle * 50
       @shoot_bullet.call Bullet.new(point, angle * @bullet_velocity)
     end
 
@@ -104,6 +105,11 @@ class Bullet < ActiveObject
   end
 
   def out(other=nil)
+    llimit = Point.new(self.image.width,self.image.height)*0.5
+    ulimit = $conf.active_field - Point.new(self.image.width,self.image.height)*0.5
+    @point = Point.catch(llimit, @point, ulimit)
+    self.x = @point.x; self.y = @point.y
+
     self.fighting = false
     start_animation :exit, @@exit_image
   end

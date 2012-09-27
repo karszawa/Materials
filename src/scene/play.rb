@@ -15,13 +15,14 @@ class Array; include ArrayExtension; end
 
 class PlayScene < Scene::Base
   def init
+    @player = Player.new(lambda{ |blt| @bullets << blt })
+
     @level = 0
 
     @enemies = []
     @bullets = []
 
-    @player = Player.new(lambda{ |blt| @bullets << blt })
-
+    # @goals = []
     @panels = []
 
 
@@ -43,14 +44,18 @@ class PlayScene < Scene::Base
     def @bullets.delete_outer
       Sprite.check($conf.divid_line, self, nil, :out)
     end
+
+=begin
+    # @goals#reach => ’¤É’¤ì’¤«’¤Î’¥´’¡¼’¥ë’¤ËPlayer’¤¬’¤¿’¤É’¤ê’Ãå’¤¤’¤¿
+    def @goals.reached(player)
+      Sprite.check(self, player, :hit, nil)
+    end
+=end
   end
 
   def update
     Sprite.update [@player, @enemies, @bullets, @panels]
-    # Sprite.clean [@enemeis, @bullets]
-    Sprite.clean @enemies
-    Sprite.clean @bullets
-    Sprite.clean @panels
+    Sprite.clean @enemies; Sprite.clean @bullets; Sprite.clean @panels
 
     Sprite.check @enemies, @bullets, :hit
     Sprite.check @player, @enemies, :hit
@@ -66,6 +71,17 @@ class PlayScene < Scene::Base
 
       @panels << DynamicMessagePanel.new(:levelup) unless @next_scene
     end
+
+=begin
+    if @goals.reached(@player)
+      @enemies.clear.read_db(@level += 1)
+
+      @next_scene =
+        GameClearScene.new(player: @player, time: @time) if @enemeis.size == 0
+
+      @panels << DynamicMessagePanel.new(:levelup) unless @next_scene
+    end
+=end
 
     @next_scene = GameOverScene.new(enemies: @enemies) if @player.vanished?
   end
