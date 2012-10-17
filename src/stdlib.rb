@@ -106,7 +106,11 @@ class Vector2
   end
 
   def abs
-    Math.sqrt @x**2 + @y**2
+    Math.sqrt(@x**2 + @y**2)
+  end
+
+  def arg
+    Math.atan2(@y, @x)
   end
 
   alias :size :abs

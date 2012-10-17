@@ -1,3 +1,4 @@
+# -*- coding: undecided -*-
 require 'dxruby'
 require 'pry' if $conf.debug
 require './dxruby/scene'
@@ -18,7 +19,9 @@ class SelectScene < Scene::Base
       @now_choice = (@now_choice + Input.y) % @choices_list.size
     end
 
-    @next_scene = @scene_list[@now_choice].new if Input.key_push?(K_RETURN)
+    if Input.key_push?(K_RETURN) or Input.key_push?(K_Z)
+      @next_scene = @scene_list[@now_choice].new
+    end
   end
 
   @@font = Font.new 30

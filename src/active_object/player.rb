@@ -8,11 +8,15 @@ class Player < ActiveObject
   def initialize(shoot_bullet)
     super $conf.player_init_point, Vector2.new
 
-    @life = 1000
+    @life = 100
     @angle = Vector2.new(0, 1)
     @max_velocity = 8
     @bullet_velocity = 10
     @accel = 0.94
+    @fire_weight = 0.05
+    @spiral_base_ang = 0
+    @normal_fire_time = Time.now - @fire_weight
+    @spiral_fire_time = Time.now - @fire_weight
 
     @shoot_bullet = shoot_bullet
 
@@ -47,16 +51,28 @@ class Player < ActiveObject
   end
 
   def fire
-    self.nomal_fire if Input.key_down? K_Z
+    self.normal_fire(Input.pad_rstick)
     self.spiral_fire if Input.key_down? K_X
+
+    self.normal_fire(@angle.to_a) if Input.key_down? K_Z
   end
 
-  def nomal_fire
-    position = @point + @angle * 50
-    position.x += @@image.width / 2
-    position.y += @@image.height / 2
+  def normal_fire(stick)
+    if @normal_fire_time + @fire_weight <= Time.now and stick != [0, 0]
+      @normal_fire_time = Time.now
 
-    @shoot_bullet.call Bullet.new(position, @angle * @bullet_velocity)
+      vec = Vector2.new(*stick)
+      vec.size = 1.0
+      ang = vec.arg
+
+      position = @point + vec * 50
+      dx, dy = @@image.width/2, @@image.height/2
+      position.x += dx * Math.cos(ang) + dy * Math.sin(ang)
+      position.y += dy * Math.cos(ang) - dx * Math.sin(ang)
+
+      rd = (rand-0.5)*Math.PI/15
+      @shoot_bullet.call(Bullet.new(position, vec.rotate(rd) * @bullet_velocity))
+    end
   end
 
   def spiral_fire
@@ -64,12 +80,14 @@ class Player < ActiveObject
     base_point = @point + Point.new(@@image.width / 2, @@image.height / 2)
 
     bullet_num.times do |i|
-      angle = Vector2.polar(i * 2.0 * Math.PI / bullet_num, 1.0)
+      angle = Vector2.polar(i * 2.0 * Math.PI / bullet_num + @spiral_base_ang, 1.0)
       point = base_point + angle * 50
       @shoot_bullet.call Bullet.new(point, angle * @bullet_velocity)
     end
 
-    @life -= 10
+    @spiral_base_ang += 10
+
+    @life -= 1
     self.vanish if @life <= 0
   end
 

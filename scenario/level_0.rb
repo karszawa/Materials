@@ -10,15 +10,10 @@ Blue time, point_x, point_y, difficulty
 Green time, point_x, point_y, difficulty
 Yellow time, point_x, point_y, difficulty
 
-=begin
-10.times { |i| Red i * 0.3 + 0, 20, 20, 1.0 }
-10.times { |i| Red i * 0.3 + 3, 1880, 20, 1.0 }
-10.times { |i| Red i * 0.3 + 6, 20, 1400, 1.0 }
-10.times { |i| Red i * 0.3 + 9, 1880, 1400, 1.0 }
 
 
-100.times do
-  Blue 10, rand($conf.move_area_max.x), rand($conf.move_area_max.y), rand
-  Green 25, rand($conf.move_area_max.x), rand($conf.move_area_max.y), rand
-end
-=end
+base_x = $conf.active_field.x / 2
+base_y = $conf.active_field.y / 2
+
+r = 1
+theta = 0

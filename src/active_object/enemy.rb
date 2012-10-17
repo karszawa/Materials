@@ -207,3 +207,4 @@ class GreenEnemy < Enemy
     start_animation :fight, [@@image]
   end
 end
+

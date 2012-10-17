@@ -22,9 +22,7 @@ class PlayScene < Scene::Base
     @enemies = []
     @bullets = []
 
-    # @goals = []
     @panels = []
-
 
 
     # ’Àï’¾ì’¤Ë’Éü’µ¢’¤·’¤Æ’¤¤’¤ëenemies’¤Îenemy’¥ª’¥Ö’¥¸’¥§’¥¯’¥È
@@ -44,13 +42,6 @@ class PlayScene < Scene::Base
     def @bullets.delete_outer
       Sprite.check($conf.divid_line, self, nil, :out)
     end
-
-=begin
-    # @goals#reach => ’¤É’¤ì’¤«’¤Î’¥´’¡¼’¥ë’¤ËPlayer’¤¬’¤¿’¤É’¤ê’Ãå’¤¤’¤¿
-    def @goals.reached(player)
-      Sprite.check(self, player, :hit, nil)
-    end
-=end
   end
 
   def update
@@ -71,17 +62,6 @@ class PlayScene < Scene::Base
 
       @panels << DynamicMessagePanel.new(:levelup) unless @next_scene
     end
-
-=begin
-    if @goals.reached(@player)
-      @enemies.clear.read_db(@level += 1)
-
-      @next_scene =
-        GameClearScene.new(player: @player, time: @time) if @enemeis.size == 0
-
-      @panels << DynamicMessagePanel.new(:levelup) unless @next_scene
-    end
-=end
 
     @next_scene = GameOverScene.new(enemies: @enemies) if @player.vanished?
   end
@@ -114,9 +94,9 @@ class PlayScene < Scene::Base
     end
 
     # Life gage 50,180
-    Window.draw_scale( 90, 180, @@life_bar, @player.life / 300.0, 1, 0, 0, 2000)
-    # Rest Enemies
+    Window.draw_scale(90, 180, @@life_bar, @player.life / 30.0, 1, 0, 0, 2000)
 
+    # Rest Enemies
     Window.draw *($conf.draw_gap.to_a), @@background_image, 0
 
 
