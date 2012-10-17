@@ -18,9 +18,7 @@ class SelectScene < Scene::Base
       @now_choice = (@now_choice + Input.y) % @choices_list.size
     end
 
-    if Input.key_push?(K_RETURN) or Input.key_push?(K_Z)
-      @next_scene = @scene_list[@now_choice].new
-    end
+    @next_scene = @scene_list[@now_choice].new if Input.key_push?(K_RETURN)
   end
 
   @@font = Font.new 30

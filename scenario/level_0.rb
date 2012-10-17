@@ -10,6 +10,7 @@ Blue time, point_x, point_y, difficulty
 Green time, point_x, point_y, difficulty
 Yellow time, point_x, point_y, difficulty
 
+Red 0, 0, 0, 1, silver:true
 
 
 base_x = $conf.active_field.x / 2

@@ -1,38 +1,22 @@
-﻿[setting]
-
+[setting]
 最初にプログラミング言語Rubyの実行環境を導入する。
-
 Materials/settings_and_instructions/rubyinstaller-1.9.3-p194.exeを実行
-
 パスは通す設定にする。rbファイルとの関連付けは行うようにする。
 
-
-
 次にRubyのライブラリ環境Rubygemsを導入する。
-
 Materials/settings_and_instructions/rubygems-1.8.24/setup.rbを実行
-
 rbファイルとの関連付けが成功していたらファイルをダブルクリックで実行されるはず
-
 実行できなかったらコマンドプロンプトを起動して同ディレクトリまで移動して
-
 $ ruby setup.rb
 をプロンプトに打ち込んで実行できるはず（$は入力しなくていい）
 
-
 次にpryというRubyの高機能対話型インターフェイスを導入する。
-
 コマンドプロンプトを起動して同ディレクトリまで移動して
-
 $ gem install pry
 でインストールできたと思う多分。
 
-
 次にDXRubyというRubyのゲームライブラリを導入する。
-
 Rubygemsでは公開されてないので普通にインストーラーを使う。
-
-
 Materials/settings_and_instructions/dxruby140-mswin32-ruby19/install.rbを実行
 
 ここまでやってMaterials/main.rbが起動できたら環境構築成功

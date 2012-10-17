@@ -4,11 +4,10 @@ require './src/active_object/active_object'
 
 
 class Enemy < ActiveObject
-  def initialize(point, velocity, difficulty, option={})
+  def initialize(point, velocity, difficulty)
     super point, velocity
 
     @difficulty = difficulty
-    @option = option
 
     add_animation :advent, 1, (0..13).to_a, :to_fight_mode
     add_animation :exit, 1, (0..7).to_a, :vanish
@@ -36,10 +35,6 @@ class Enemy < ActiveObject
     start_animation :exit, @@exit_image
   end
 
-  def silver?
-    @option[:silver]
-  end
-
   @@advent_image = Image.load_tiles("./img/pipo-btleffect007.png", 14, 1)
   @@exit_image = Image.load_tiles("./img/pipo-btleffect008.png", 8, 1)
 end
@@ -49,8 +44,8 @@ end
 # プレイヤーを追う。
 # 大きくて遅い。
 class RedEnemy < Enemy
-  def initialize(point, difficulty, option={})
-    super point, Vector2.new( difficulty *3 ), difficulty, option
+  def initialize(point, difficulty)
+    super point, Vector2.new( difficulty *3 ), difficulty
     @max_flw_ang = difficulty / 3 + 0.3
   end
 
@@ -77,8 +72,8 @@ end
 # プレイヤーを追う。
 # 小さくて速い。
 class BlueEnemy < Enemy
-  def initialize(point, difficulty, option={})
-    super point, Vector2.new( difficulty * 4.5 ), difficulty, option
+  def initialize(point, difficulty)
+    super point, Vector2.new( difficulty * 4.5 ), difficulty
     @max_flw_ang = 0.40
   end
 
@@ -105,8 +100,8 @@ end
 # 観測半径内にプレイヤーを発見したらプレイヤーを追うようになる。
 class YellowEnemy < Enemy
   # point は巡回円の中心とする
-  def initialize(point, difficulty, option={})
-    super point, Vector2.new( difficulty * 4 ), difficulty, option
+  def initialize(point, difficulty)
+    super point, Vector2.new( difficulty * 4 ), difficulty
 
     @look_center = point
 
@@ -155,8 +150,8 @@ end
 # ランダムな点を選び、そこに向かう。到着したら次の点を選び底に向かう。
 # 観測半径内にプレイヤーを発見したらプレイヤーを追うようになる。
 class GreenEnemy < Enemy
-  def initialize(point, difficulty, option={})
-    super point, Vector2.new( difficulty * 6 ), difficulty, option
+  def initialize(point, difficulty)
+    super point, Vector2.new( difficulty * 6 ), difficulty
 
     @arv_rad = 50 # 次のランダム目的地への到着判定半径
     @look_rad = 100 * difficulty + 50 # プレイヤー発見半径
@@ -212,4 +207,3 @@ class GreenEnemy < Enemy
     start_animation :fight, [@@image]
   end
 end
-

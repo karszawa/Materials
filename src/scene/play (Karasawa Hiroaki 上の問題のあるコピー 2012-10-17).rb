@@ -22,7 +22,9 @@ class PlayScene < Scene::Base
     @enemies = []
     @bullets = []
 
+    # @goals = []
     @panels = []
+
 
 
     # ’Àï’¾ì’¤Ë’Éü’µ¢’¤·’¤Æ’¤¤’¤ëenemies’¤Îenemy’¥ª’¥Ö’¥¸’¥§’¥¯’¥È
@@ -36,19 +38,19 @@ class PlayScene < Scene::Base
     def @enemies.read_db(level)
       concat(read_enemies_from_database(level))
     end
+    @enemies.read_db(@level)
 
     # @bullets#delete_outer => ’¾ì’³°’¤Ë’½Ð’¤¿bullets’¤ò’ºï’½ü’¤¹’¤ë
     def @bullets.delete_outer
       Sprite.check($conf.divid_line, self, nil, :out)
     end
 
-    # @enemies#scenario_clear?
-    def @enemies.scenario_clear?
-      size == 0
+=begin
+    # @goals#reach => ’¤É’¤ì’¤«’¤Î’¥´’¡¼’¥ë’¤ËPlayer’¤¬’¤¿’¤É’¤ê’Ãå’¤¤’¤¿
+    def @goals.reached(player)
+      Sprite.check(self, player, :hit, nil)
     end
-
-    @enemies.read_db(@level)
-    @panels << DynamicMessagePanel.new(:howto)
+=end
   end
 
   def update
@@ -61,7 +63,7 @@ class PlayScene < Scene::Base
     @bullets.delete_outer
     @enemies.revitalize(elap_time)
 
-    if @enemies.scenario_clear?
+    if @enemies.size == 0 then
       @enemies.read_db(@level += 1)
 
       @next_scene =
@@ -69,6 +71,17 @@ class PlayScene < Scene::Base
 
       @panels << DynamicMessagePanel.new(:levelup) unless @next_scene
     end
+
+=begin
+    if @goals.reached(@player)
+      @enemies.clear.read_db(@level += 1)
+
+      @next_scene =
+        GameClearScene.new(player: @player, time: @time) if @enemeis.size == 0
+
+      @panels << DynamicMessagePanel.new(:levelup) unless @next_scene
+    end
+=end
 
     @next_scene = GameOverScene.new(enemies: @enemies) if @player.vanished?
   end
@@ -101,9 +114,9 @@ class PlayScene < Scene::Base
     end
 
     # Life gage 50,180
-    Window.draw_scale(90, 180, @@life_bar, @player.life / 30.0, 1, 0, 0, 2000)
-
+    Window.draw_scale( 90, 180, @@life_bar, @player.life / 300.0, 1, 0, 0, 2000)
     # Rest Enemies
+
     Window.draw *($conf.draw_gap.to_a), @@background_image, 0
 
 
@@ -117,8 +130,7 @@ class DynamicMessagePanel < AnimeSprite
   @@images = {
     levelup: Array.new(10) do |i|
       Image.load("./img/random_stripe/random_stripe" + min(i, 9).to_s + ".png")
-    end,
-    howto: Array.new(10){ |i| Image.load("./img/howto/howto" + i.to_s + ".png") }
+    end
   }
 
   def initialize(various)
@@ -127,7 +139,6 @@ class DynamicMessagePanel < AnimeSprite
     @var = various
 
     add_animation :levelup, 5, (0..9).to_a + [9] * 10, :vanish
-    add_animation :howto, 5, (0..9).to_a + [9] * 100, :vanish
 
     self.animation_image = @@images[@var]
     self.center_x = 0
