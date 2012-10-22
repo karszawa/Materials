@@ -51,10 +51,8 @@ class Player < ActiveObject
   end
 
   def fire
-    self.normal_fire(Input.pad_rstick)
-    self.spiral_fire if Input.key_down? K_X
-
     self.normal_fire(@angle.to_a) if Input.key_down? K_Z
+    self.spiral_fire if Input.key_down? K_X
   end
 
   def normal_fire(stick)
@@ -65,10 +63,8 @@ class Player < ActiveObject
       vec.size = 1.0
       ang = vec.arg
 
-      position = @point + vec * 50
+      position = @point
       dx, dy = @@image.width/2, @@image.height/2
-      position.x += dx * Math.cos(ang) + dy * Math.sin(ang)
-      position.y += dy * Math.cos(ang) - dx * Math.sin(ang)
 
       rd = (rand-0.5)*Math.PI/15
       @shoot_bullet.call(Bullet.new(position, vec.rotate(rd) * @bullet_velocity))

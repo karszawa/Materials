@@ -18,7 +18,7 @@ $conf.divid_line =
   ]
 
 
-$conf.player_init_point = Point.new(50)
+$conf.player_init_point = Point.new(320, 240)
 
 $conf.window_size = Vector2.new(640, 480)
 $conf.show_area_center = $conf.window_size / 2
