@@ -44,7 +44,7 @@ class PlayScene < Scene::Base
 
     # @enemies#scenario_clear?
     def @enemies.scenario_clear?
-      size == 0
+      self.count{ |x| x.silver } == self.size
     end
 
     @enemies.read_db(@level)
@@ -62,6 +62,7 @@ class PlayScene < Scene::Base
     @enemies.revitalize(elap_time)
 
     if @enemies.scenario_clear?
+      @enemies.clear
       @enemies.read_db(@level += 1)
 
       @next_scene =

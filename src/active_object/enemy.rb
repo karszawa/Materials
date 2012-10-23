@@ -10,6 +10,8 @@ class Enemy < ActiveObject
     @difficulty = difficulty
     @option = option
 
+    @first_update = true
+
     add_animation :advent, 1, (0..13).to_a, :to_fight_mode
     add_animation :exit, 1, (0..7).to_a, :vanish
     add_animation :fight, 1, [0], :fight
@@ -18,7 +20,7 @@ class Enemy < ActiveObject
     start_animation :advent, @@advent_image
   end
 
-  def fallow_player
+  def follow_player
     origin_angle = Math.atan2 *@velocity.to_a.reverse
     target_angle = Math.atan2 *($player_pnt - @point).to_a.reverse
 
@@ -31,13 +33,26 @@ class Enemy < ActiveObject
     @point += (@velocity = next_vel)
   end
 
-  def hit(other)
-    self.fighting = false
-    start_animation :exit, @@exit_image
+  def update
+    if @first_update
+      if @option[:follow]
+        @point += $player_pnt
+        @first_update = false
+      end
+    end
+
+    super
   end
 
-  def silver?
-    @option[:silver]
+  def hit(other)
+    unless @option[:silver]
+      self.fighting = false
+      start_animation :exit, @@exit_image
+    end
+  end
+
+  def method_missing(action, *args)
+    @option[action]
   end
 
   @@advent_image = Image.load_tiles("./img/pipo-btleffect007.png", 14, 1)
@@ -55,11 +70,12 @@ class RedEnemy < Enemy
   end
 
   def move
-    self.fallow_player
+    self.follow_player
   end
 
 
   @@image = Image.load('./img/red_enemy.png')
+  @@silver = Image.load('./img/red_enemy_silver.png')
   def init
     self.collision = [ 22, 22, 22 ]
     self.image = @@image
@@ -68,7 +84,7 @@ class RedEnemy < Enemy
 
   def to_fight_mode
     self.fighting = true
-    start_animation :fight, [@@image]
+    start_animation :fight, (@option[:silver] ? [@@silver] : [@@image])
   end
 end
 
@@ -83,10 +99,11 @@ class BlueEnemy < Enemy
   end
 
   def move
-    self.fallow_player
+    self.follow_player
   end
 
   @@image = Image.load('./img/blue_enemy.png')
+  @@silver = Image.load('./img/blue_enemy_silver.png')
   def init
     self.collision = [14, 14, 14]
     self.image = @@image
@@ -95,7 +112,7 @@ class BlueEnemy < Enemy
 
   def to_fight_mode
     self.fighting = true
-    start_animation :fight, [@@image]
+    start_animation :fight, (@option[:silver] ? [@@silver] : [@@image])
   end
 end
 
@@ -127,7 +144,7 @@ class YellowEnemy < Enemy
     self.angle += @rot_vel
 
     if @find_flag then
-      self.fallow_player
+      self.follow_player
     else
       @look_angle += @look_ang_vel
       @point = @look_center + Point.polar(@look_angle, @move_rad)
@@ -138,6 +155,7 @@ class YellowEnemy < Enemy
 
 
   @@image = Image.load('./img/yellow_enemy.png')
+  @@silver = Image.load('./img/yellow_enemy_silver.png')
   def init
     self.collision = [ 0, 0, 34, 34 ]
     self.image = @@image
@@ -146,7 +164,7 @@ class YellowEnemy < Enemy
 
   def to_fight_mode
     self.fighting = true
-    start_animation :fight, [@@image]
+    start_animation :fight, (@option[:silver] ? [@@silver] : [@@image])
   end
 end
 
@@ -173,7 +191,7 @@ class GreenEnemy < Enemy
     self.angle += @rot_vel
 
     if @find_flag then
-      self.fallow_player
+      self.follow_player
     else
       @point += @velocity
 
@@ -200,6 +218,7 @@ class GreenEnemy < Enemy
   end
 
   @@image = Image.load('./img/green_enemy.png')
+  @@silver = Image.load('./img/green_enemy_silver.png')
   def init
     self.collision = [14, 0, 0, 32, 25, 52]
     self.image = @@image
@@ -209,7 +228,7 @@ class GreenEnemy < Enemy
 
   def to_fight_mode
     self.fighting = true
-    start_animation :fight, [@@image]
+    start_animation :fight, (@option[:silver] ? [@@silver] : [@@image])
   end
 end
 

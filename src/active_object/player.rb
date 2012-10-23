@@ -127,4 +127,8 @@ class Bullet < ActiveObject
     self.fighting = false
     start_animation :exit, @@exit_image
   end
+
+  def hit(other)
+    self.vanish unless other.silver
+  end
 end

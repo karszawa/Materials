@@ -10,11 +10,20 @@ Blue time, point_x, point_y, difficulty
 Green time, point_x, point_y, difficulty
 Yellow time, point_x, point_y, difficulty
 
-Red 0, 0, 0, 1, silver:true
+Red time, point_x+1000, point_y+1000, difficulty, silver:true
+Blue time, point_x+1000, point_y+1000, difficulty, silver:true
+Green time, point_x+1000, point_y+1000, difficulty, silver:true
+Yellow time, point_x+1000, point_y+1000, difficulty, silver:true
 
+5.times do |t|
+  10.times do |i|
+    arg = i / 10.0 * 2 * Math.PI
+    r = 200
 
-base_x = $conf.active_field.x / 2
-base_y = $conf.active_field.y / 2
+    x = r * Math.cos(arg)
+    y = r * Math.sin(arg)
 
-r = 1
-theta = 0
+    # メソッドの最後にfallow:trueを追加で、出現位置をプレイヤー基準にする。
+    Red 5 + t, x, y, 0.5 + t * 0.1, follow:true
+  end
+end
