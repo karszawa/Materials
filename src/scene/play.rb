@@ -1,4 +1,4 @@
-# -*- coding: emacs-mule -*-
+# -*- coding: utf-8 -*-
 require 'dxruby'
 require 'dxrubyex'
 require './dxruby/scene'
@@ -25,24 +25,20 @@ class PlayScene < Scene::Base
     @panels = []
 
 
-    # ’Àï’¾ì’¤Ë’Éü’µ¢’¤·’¤Æ’¤¤’¤ëenemies’¤Îenemy’¥ª’¥Ö’¥¸’¥§’¥¯’¥È
     def @enemies.working; select{|o| o.class != OpenStruct }; end
-    # @enemies#revitalize => ’½Ð’¸½’»þ’´Ö’¤ò’²á’¤®’¤¿enemy’¤ò’½Ð’¸½’¤µ’¤»’¤ë
+
     def @enemies.revitalize(elap_time)
       map!{|o| (o.class == OpenStruct and o.time < elap_time) ? o.enemy : o }
     end
 
-    # @enemies#read_db(level) => ’¥Ç’¡¼’¥¿’¥Ù’¡¼’¥¹’¤«’¤é’¥ì’¥Ù’¥ë’¤´’¤È’¤Îenemy’¤ò’ÅÐ’Ï¿’¤¹’¤ë
     def @enemies.read_db(level)
       concat(read_enemies_from_database(level))
     end
 
-    # @bullets#delete_outer => ’¾ì’³°’¤Ë’½Ð’¤¿bullets’¤ò’ºï’½ü’¤¹’¤ë
-    def @bullets.delete_outer
+    def @bullets.clean_outer
       Sprite.check($conf.divid_line, self, nil, :out)
     end
 
-    # @enemies#scenario_clear?
     def @enemies.scenario_clear?
       self.count{ |x| x.silver } == self.size
     end
@@ -58,7 +54,7 @@ class PlayScene < Scene::Base
     Sprite.check @enemies, @bullets, :hit
     Sprite.check @player, @enemies, :hit
 
-    @bullets.delete_outer
+    @bullets.clean_outer
     @enemies.revitalize(elap_time)
 
     if @enemies.scenario_clear?
@@ -71,7 +67,10 @@ class PlayScene < Scene::Base
       @panels << DynamicMessagePanel.new(:levelup) unless @next_scene
     end
 
-    @next_scene = GameOverScene.new(enemies: @enemies) if @player.vanished?
+    if @player.vanished?
+      args = {enemies: @enemies, bullets: @bullets, level: @level}
+      @next_scene = GameOverScene.new(args)
+    end
   end
 
 
@@ -83,9 +82,9 @@ class PlayScene < Scene::Base
   def render
     Sprite.draw [@player, @enemies, @bullets, @panels]
 
-    Window.draw_font 10, 160, "Lv. " + @level.to_s, @@font, :z => 1000
-    Window.draw_font 10, 180, "Life", @@font, :z => 1000
-    Window.draw_font 50, 180, @player.life.to_s, @@font, :z => 1000
+    Window.draw_font_ex 10, 160, "Lv. "+@level.to_s, @@font, z: 1000, shadow: true
+    Window.draw_font_ex 10, 180, "Life", @@font, z: 1000, shadow: true
+    Window.draw_font_ex 50, 180, @player.life.to_s, @@font, z: 1000, shadow: true
 
     # message_board
     Window.draw 5, 5, @@waku, 2400
@@ -108,7 +107,7 @@ class PlayScene < Scene::Base
     Window.draw *($conf.draw_gap.to_a), @@background_image, 0
 
 
-    debug_string = "load=" + Window.get_load.round.to_s + "%"
+    debug_string = "load=" + Window.get_load.round.to_s + "%" if $conf.debug
     Window.draw_font 450, 10, debug_string, @@font, :z => 5000 if $conf.debug
   end
 end
@@ -117,9 +116,14 @@ end
 class DynamicMessagePanel < AnimeSprite
   @@images = {
     levelup: Array.new(10) do |i|
-      Image.load("./img/random_stripe/random_stripe" + min(i, 9).to_s + ".png")
+      Image.load("./img/levelup/random_stripe" + min(i, 9).to_s + ".png")
     end,
-    howto: Array.new(10){ |i| Image.load("./img/howto/howto" + i.to_s + ".png") }
+    howto: Array.new(10) do |i|
+      Image.load("./img/howto/random_stripe" + i.to_s + ".png")
+    end,
+    gameover: Array.new(10) do |i|
+      Image.load("./img/gameover/random_stripe" + i.to_s + ".png")
+    end
   }
 
   def initialize(various)
@@ -129,6 +133,7 @@ class DynamicMessagePanel < AnimeSprite
 
     add_animation :levelup, 5, (0..9).to_a + [9] * 10, :vanish
     add_animation :howto, 5, (0..9).to_a + [9] * 100, :vanish
+    add_animation :gameover, 5, (0..9).to_a + [9] * 1000, :vanish
 
     self.animation_image = @@images[@var]
     self.center_x = 0
