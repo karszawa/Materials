@@ -62,7 +62,7 @@ class PlayScene < Scene::Base
       @enemies.read_db(@level += 1)
 
       @next_scene =
-        GameClearScene.new(player: @player, time: @time) if @enemies.size == 0
+        GameClearScene.new(player: @player, bullets: @bullets, time: @time, level: @level) if @enemies.size == 0
 
       @panels << DynamicMessagePanel.new(:levelup) unless @next_scene
     end
@@ -123,7 +123,10 @@ class DynamicMessagePanel < AnimeSprite
     end,
     gameover: Array.new(10) do |i|
       Image.load("./img/gameover/random_stripe" + i.to_s + ".png")
-    end
+    end,
+    gameclear: Array.new(10) do |i|
+      Image.load("./img/gameclear/random_stripe" + i.to_s + ".png")
+    end,
   }
 
   def initialize(various)
@@ -131,9 +134,10 @@ class DynamicMessagePanel < AnimeSprite
 
     @var = various
 
-    add_animation :levelup, 5, (0..9).to_a + [9] * 10, :vanish
     add_animation :howto, 5, (0..9).to_a + [9] * 100, :vanish
+    add_animation :levelup, 5, (0..9).to_a + [9] * 10, :vanish
     add_animation :gameover, 5, (0..9).to_a + [9] * 1000, :vanish
+    add_animation :gameclear, 5, (0..9).to_a + [9] * 1000, :vanish
 
     self.animation_image = @@images[@var]
     self.center_x = 0
