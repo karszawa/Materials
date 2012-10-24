@@ -24,7 +24,10 @@ class Enemy < ActiveObject
     origin_angle = Math.atan2 *@velocity.to_a.reverse
     target_angle = Math.atan2 *($player_pnt - @point).to_a.reverse
 
-    next_angle = range -@max_flw_ang, target_angle - origin_angle, @max_flw_ang
+    a1 = range(-@max_flw_ang, target_angle - origin_angle, @max_flw_ang)
+    a2 = range(-@max_flw_ang, 2*Math.PI-target_angle+origin_angle, @max_flw_ang)
+
+    next_angle = (a1.abs < a2.abs ? a1 : a2)
 
     # 慣性が働くようにしている
     next_vel = @velocity + @velocity.rotate(next_angle)
