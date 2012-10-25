@@ -62,7 +62,7 @@ class PlayScene < Scene::Base
       @enemies.read_db(@level += 1)
 
       @next_scene =
-        GameClearScene.new(player: @player, bullets: @bullets, time: @time, level: @level) if @enemies.size == 0
+        GameClearScene.new(player: @player, bullets: @bullets, time: self.elap_time.round, level: @level) if @enemies.size == 0
 
       @panels << DynamicMessagePanel.new(:levelup) unless @next_scene
     end

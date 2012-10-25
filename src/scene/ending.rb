@@ -8,6 +8,7 @@ class GameClearScene < Scene::Base
   end
 
   def init(args)
+    @time = args[:time]
     @level = args[:level]
     @player = args[:player]
     @bullets = args[:bullets]
@@ -17,8 +18,8 @@ class GameClearScene < Scene::Base
   end
 
   def update
-    @next_scene = RankingScene.new if Input.key_push?(K_Z) and 3 < self.elap_time
-    @next_scene = RankingScene.new if 10 < self.elap_time
+    @next_scene = RankingScene.new(time: @time) if Input.key_push?(K_Z) and 3 < self.elap_time
+    @next_scene = RankingScene.new(time: @time) if 10 < self.elap_time
 
     Sprite.update [@player, @bullets, @panel]
     @bullets.clean_outer
@@ -70,8 +71,8 @@ class GameOverScene < Scene::Base
   end
 
   def update
-    @next_scene = RankingScene.new if Input.key_push?(K_Z) and 3 < self.elap_time
-    @next_scene = RankingScene.new if 10 < self.elap_time
+      @next_scene = RankingScene.new(level: @level) if Input.key_push?(K_Z) and 3 < self.elap_time
+    @next_scene = RankingScene.new(level: @level) if 10 < self.elap_time
 
     Sprite.update [@enemies, @bullets, @panel]
     @bullets.clean_outer

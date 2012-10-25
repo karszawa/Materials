@@ -60,7 +60,7 @@ class Player < ActiveObject
       @normal_fire_time = Time.now
 
       vec = Vector2.new(*stick)
-      vec.size = 1.0
+      vec.size = 5.0
       ang = vec.arg
 
       position = @point
@@ -73,11 +73,10 @@ class Player < ActiveObject
 
   def spiral_fire
     bullet_num = 20
-    base_point = @point + Point.new(@@image.width / 2, @@image.height / 2)
 
     bullet_num.times do |i|
       angle = Vector2.polar(i * 2.0 * Math.PI / bullet_num + @spiral_base_ang, 1.0)
-      point = base_point + angle * 50
+      point = @point + angle * 50
       @shoot_bullet.call Bullet.new(point, angle * @bullet_velocity)
     end
 
