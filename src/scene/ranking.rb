@@ -8,29 +8,25 @@ class RankingScene < Scene::Base
   end
 
   def init(args)
-    @time = args[:time]
+    @hp = args[:life]
     @level = args[:level]
 
-    @ranking = File.read("./ranking", encoding: Encoding::UTF_8).split("\n")
+    @ranking = File.read("./data/ranking", encoding: Encoding::UTF_8).split("\n")
 
-    @ranking << "Lv." + @level.to_s if @level
-    @ranking << @time.to_s + "s" if @time
+    @ranking << "LV " + (@level+1).to_s if @level
+    @ranking << "HP " + @hp.to_s if @hp
 
-    @ranking.sort! do |a, b|
-      if a[-1] == b[-1] and a[-1] == "s"
-        a[0...-1].to_i <=> b[0...-1].to_i
-      elsif a[0] == b[0] and a[0] == "L"
-        b[2..-1].to_i <=> a[2..-1].to_i
-      else
-        a[0] == "L" ? 1 : -1
-      end
-    end
+    @ranking.sort!{ |a, b| (a[0] == b[0] ? b[3..-1].to_i <=> a[3..-1].to_i : (a[0] == "H" ? -1 : 1)) }
 
     @angle = 0
+
+    @@bgm.play
   end
 
   def quit
-    File.open("./ranking", "w"){ |f| f.write @ranking.join("\n") }
+    File.open("./data/ranking", "w"){ |f| f.write @ranking.join("\n") }
+
+    @@bgm.stop
   end
 
   def update
@@ -40,7 +36,7 @@ class RankingScene < Scene::Base
     @angle += 0.05
   end
 
-
+  @@bgm = Sound.new('./snd/ranking.wav'); @@bgm.loop_count = -1
   @@font = Font.new 25
   @@background_image = Image.load('./img/play_background.png')
   @@waku = Image.new(270,27).roundbox_fill(0, 0, 250, 27, 10, [0, 10, 100])
@@ -66,15 +62,18 @@ class RankingScene < Scene::Base
       Window.draw_ex(x, y, @@enemies_image[i], option)
     end
 
-    Window.draw_font_ex(420, 420, "Your score: "+@time.to_s+"s", @@font,
+    Window.draw_font_ex(420, 420, "Your score: HP "+@hp.to_s, @@font,
                         z: 100, shadow: true,
-                        color: [255, 0, 51], alpha: 200) if @time
+                        color: [255, 0, 51], alpha: 200) if @hp
 
-    Window.draw_font_ex(420, 420, "Your score: Lv"+@level.to_s, @@font,
+    Window.draw_font_ex(420, 420, "Your score: LV "+(@level+1).to_s, @@font,
                         z: 100, shadow: true,
                         color: [102, 255, 0], alpha: 200) if @level
 
-    Window.draw_ex(380, 419, @@waku, z: 50, alpha: 100) if @time or @level
+    Window.draw_font_ex(460, 450, "Press Z-key", @@font, z: 100, shadow: true,
+                        color: [0, 102, 255], alpha: elap_time%1*200)
+
+    Window.draw_ex(380, 419, @@waku, z: 50, alpha: 100) if @hp or @level
     Window.draw 0, 0, @@background_image
   end
 end

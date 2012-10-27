@@ -38,13 +38,12 @@ class Enemy < ActiveObject
 
   def update
     if @first_update
-      if @option[:follow]
-        @point += $player_pnt
-        @first_update = false
-      end
+      @point += $player_pnt if @option[:follow]
     end
 
     super
+
+    @first_update = false
   end
 
   def hit(other)
@@ -126,21 +125,31 @@ end
 class YellowEnemy < Enemy
   # point は巡回円の中心とする
   def initialize(point, difficulty, option={})
-    super point, Vector2.new( difficulty * 4 ), difficulty, option
-
-    @look_center = point
-
     @look_angle = 0.0
     @look_ang_vel = 0.01
     @look_rad = 80 * difficulty + 150
     @move_rad = 100 * difficulty + 50
     @find_flag = false
 
+    super point + Point.polar(@look_angle, @move_rad), Vector2.new( difficulty * 4 ), difficulty, option
+
+    @look_center = point
+
     @rot_vel = 1.0
     @max_flw_ang = 0.4
 
     self.angle = rand 360
     self.x += @move_rad
+  end
+
+  def update
+    if @first_update
+      @look_center += $player_pnt if @option[:follow]
+    end
+
+    super
+
+    @first_update = false
   end
 
   def move

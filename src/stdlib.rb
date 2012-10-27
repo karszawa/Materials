@@ -150,9 +150,17 @@ Point = Vector2
 
 
 module Math
-  @PI = acos(-1);
-  def self.PI
-    @PI
+  def self.PI; @PI ||= acos(-1); end
+end
+
+
+module Window
+  def get_avg_load
+    @loads ||= [0]*20
+    @loads << get_load
+    @loads = @loads[-20..-1]
+    @loads.inject(:+) / @loads.size
   end
+  module_function :get_avg_load
 end
 

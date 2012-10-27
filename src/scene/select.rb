@@ -46,6 +46,12 @@ class SelectScene < Scene::Base
 
       p
     end
+
+    @@bgm.play
+  end
+
+  def quit
+    @@bgm.stop
   end
 
   def update
@@ -61,6 +67,7 @@ class SelectScene < Scene::Base
     4.times{ |i| @points[i].update(i, self.elap_time) }
   end
 
+  @@bgm = Sound.new('./snd/select.wav'); @@bgm.loop_count = -1
   @@font = Font.new 30
   @@bg = Image.load("./img/play_background.png")
   @@enemy_img =

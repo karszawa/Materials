@@ -5,7 +5,7 @@ require 'ostruct'
 
 $conf = OpenStruct.new
 
-$conf.debug = true
+$conf.debug = false
 
 $conf.active_field = Point.new(1920, 1440)
 
@@ -19,7 +19,7 @@ $conf.divid_line =
 
 
 $player_pnt = $conf.player_init_point = Point.new(320, 240)
-
+$conf.player_max_hp = 1000
 $conf.window_size = Vector2.new(640, 480)
 $conf.show_area_center = $conf.window_size / 2
 

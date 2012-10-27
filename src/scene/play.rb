@@ -24,6 +24,7 @@ class PlayScene < Scene::Base
 
     @panels = []
 
+    @scenario_begin_time = 0
 
     def @enemies.working; select{|o| o.class != OpenStruct }; end
 
@@ -45,6 +46,13 @@ class PlayScene < Scene::Base
 
     @enemies.read_db(@level)
     @panels << DynamicMessagePanel.new(:howto)
+
+
+    @@bgm.play
+  end
+
+  def quit
+    @@bgm.stop
   end
 
   def update
@@ -55,16 +63,19 @@ class PlayScene < Scene::Base
     Sprite.check @player, @enemies, :hit
 
     @bullets.clean_outer
-    @enemies.revitalize(elap_time)
+    @enemies.revitalize(elap_time - @scenario_begin_time)
 
     if @enemies.scenario_clear?
       @enemies.clear
       @enemies.read_db(@level += 1)
 
-      @next_scene =
-        GameClearScene.new(player: @player, bullets: @bullets, time: self.elap_time.round, level: @level) if @enemies.size == 0
+      @next_scene = GameClearScene.new(player: @player, bullets: @bullets,
+                                       level: @level) if @enemies.size == 0
 
       @panels << DynamicMessagePanel.new(:levelup) unless @next_scene
+
+      @scenario_begin_time = elap_time
+      @@levelup_se.play
     end
 
     if @player.vanished?
@@ -74,6 +85,8 @@ class PlayScene < Scene::Base
   end
 
 
+  @@bgm = Sound.new('./snd/play.wav'); @@bgm.loop_count = -1
+  @@levelup_se = Sound.new('./snd/levelup.wav')
   @@font = Font.new 20
   @@completed_font = Font.new 50
   @@background_image = Image.load('./img/play_background.png')
@@ -82,12 +95,11 @@ class PlayScene < Scene::Base
   def render
     Sprite.draw [@player, @enemies, @bullets, @panels]
 
-    Window.draw_font_ex 10, 160, "Lv. "+@level.to_s, @@font, z: 1000, shadow: true
-    Window.draw_font_ex 10, 180, "Life", @@font, z: 1000, shadow: true
-    Window.draw_font_ex 50, 180, @player.life.to_s, @@font, z: 1000, shadow: true
+    Window.draw_font_ex 220, 40, "Lv. "+(@level+1).to_s, @@font, z: 1000, shadow: true,edge: true, edge_width: 1, edge_color: [102, 255, 0], edge_level: 2
+    Window.draw_font_ex 220, 10, "Life "+@player.life.to_s, @@font, z: 1000, shadow: true, edge: true, edge_width: 1, edge_color: [255, 102, 102], edge_level: 2
 
     # message_board
-    Window.draw 5, 5, @@waku, 2400
+    Window.draw 10, 10, @@waku, 2400
 
     @panels.each do |panel|
       scale = [0.104 * panel.scale_x, 0.104 * panel.scale_y]
@@ -96,19 +108,23 @@ class PlayScene < Scene::Base
     end
 
     (@enemies.working + @bullets + [@player]).each do |obj|
-      draw_point = obj.point / 10 + Point.new(5, 5)
+      ratio = 0.1
+      draw_point = obj.point * ratio + Point.new(10, 10)
+      draw_point.x -= obj.image.width * ratio
+      draw_point.y -= obj.image.height * ratio
       Window.draw_scale( *draw_point.to_a, obj.image, 0.15, 0.15, 0, 0, 2500 )
     end
 
     # Life gage 50,180
-    Window.draw_scale(90, 180, @@life_bar, @player.life / 30.0, 1, 0, 0, 2000)
+    bar_len = 1.0*@player.life/$conf.player_max_hp*15
+    Window.draw_scale(310, 10, @@life_bar, bar_len, 1, 0, 0, 2000)
 
     # Rest Enemies
     Window.draw *($conf.draw_gap.to_a), @@background_image, 0
 
 
-    debug_string = "load=" + Window.get_load.round.to_s + "%" if $conf.debug
-    Window.draw_font 450, 10, debug_string, @@font, :z => 5000 if $conf.debug
+    debug_string = "load=" + Window.get_avg_load.round.to_s + "%" if $conf.debug
+    Window.draw_font 450, 500, debug_string, @@font, :z => 5000 if $conf.debug
   end
 end
 

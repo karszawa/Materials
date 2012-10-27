@@ -25,9 +25,9 @@ class ActiveObject < AnimeSprite
     if fighting?
       move
       fire
-
-      self.x = @point.x; self.y = @point.y;
     end
+
+    self.x = @point.x; self.y = @point.y;
   end
 
   def out(other = nil)

@@ -4,11 +4,12 @@ require './src/active_object/active_object'
 
 
 class Player < ActiveObject
+  attr_reader :life
   # 発射した弾丸をPlay#bulletsに渡すラムダを引数に持つ
   def initialize(shoot_bullet)
     super $conf.player_init_point, Vector2.new
 
-    @life = 100
+    @life = $conf.player_max_hp
     @angle = Vector2.new(0, 1)
     @max_velocity = 8
     @bullet_velocity = 10
@@ -52,7 +53,7 @@ class Player < ActiveObject
 
   def fire
     self.normal_fire(@angle.to_a) if Input.key_down? K_Z
-    self.spiral_fire if Input.key_down? K_X
+    self.spiral_fire if 1 < @life and Input.key_down? K_X
   end
 
   def normal_fire(stick)
@@ -60,11 +61,13 @@ class Player < ActiveObject
       @normal_fire_time = Time.now
 
       vec = Vector2.new(*stick)
-      vec.size = 5.0
+      vec.size = 20.0
       ang = vec.arg
 
-      position = @point
+      position = @point + vec
       dx, dy = @@image.width/2, @@image.height/2
+
+      vec.size = 1.0
 
       rd = (rand-0.5)*Math.PI/15
       @shoot_bullet.call(Bullet.new(position, vec.rotate(rd) * @bullet_velocity))
@@ -72,22 +75,27 @@ class Player < ActiveObject
   end
 
   def spiral_fire
-    bullet_num = 20
+    if @spiral_fire_time + @fire_weight <= Time.now
+      @spiral_fire_time = Time.now
+      bullet_num = 20
 
-    bullet_num.times do |i|
-      angle = Vector2.polar(i * 2.0 * Math.PI / bullet_num + @spiral_base_ang, 1.0)
-      point = @point + angle * 50
-      @shoot_bullet.call Bullet.new(point, angle * @bullet_velocity)
+      bullet_num.times do |i|
+        angle = Vector2.polar(i*2.0*Math.PI/bullet_num+@spiral_base_ang, 1.0)
+        point = @point + angle * 50
+        @shoot_bullet.call Bullet.new(point, angle * @bullet_velocity)
+      end
+
+      @spiral_base_ang += 10
+
+      @life -= 10
+      @life = [@life, 1].max if $conf.debug
+      self.vanish if @life <= 0
     end
-
-    @spiral_base_ang += 10
-
-    @life -= 1
-    self.vanish if @life <= 0
   end
 
   def hit(other)
     @life -= 1
+    @life = [@life, 1].max if $conf.debug
 
     self.vanish if @life <= 0
   end

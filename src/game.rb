@@ -15,8 +15,8 @@ require './src/scene/ranking'
 
 class MaterialsGame
   def run
-    # Scene.main_loop SelectScene.new, 60, 1
-    Scene.main_loop PlayScene.new, 60, 1
+    Scene.main_loop SelectScene.new, 60, 1
+    # Scene.main_loop PlayScene.new, 60, 1
   end
 end
 

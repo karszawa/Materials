@@ -8,18 +8,16 @@ class GameClearScene < Scene::Base
   end
 
   def init(args)
-    @time = args[:time]
-    @level = args[:level]
+    @level = args[:level] + 1
     @player = args[:player]
     @bullets = args[:bullets]
-    @clear_time = args[:time]
 
     @panel = DynamicMessagePanel.new(:gameclear)
   end
 
   def update
-    @next_scene = RankingScene.new(time: @time) if Input.key_push?(K_Z) and 3 < self.elap_time
-    @next_scene = RankingScene.new(time: @time) if 10 < self.elap_time
+    @next_scene = RankingScene.new(life: @player.life) if Input.key_push?(K_Z) and 1 < self.elap_time
+    @next_scene = RankingScene.new(life: @player.life) if 5 < self.elap_time
 
     Sprite.update [@player, @bullets, @panel]
     @bullets.clean_outer
@@ -30,29 +28,36 @@ class GameClearScene < Scene::Base
   @@background_image = Image.load('./img/play_background.png')
   @@life_bar = Image.load('./img/life_bar.png')
   @@waku = Image.load('./img/waku.png')
+  @@life_bar = Image.load('./img/life_bar.png')
   def render
     Sprite.draw [[@player], @bullets, [@panel]]
 
-    Window.draw_font_ex 10, 160, "Lv. "+@level.to_s, @@font, z: 1000, shadow: true
-    Window.draw_font_ex 10, 180, "Life", @@font, z: 1000, shadow: true
-    Window.draw_font_ex 50, 180, @player.life.to_s, @@font, z: 1000, shadow: true
+    Window.draw_font_ex 220, 40, "Lv. "+@level.to_s, @@font, z: 1000, shadow: true,edge: true, edge_width: 1, edge_color: [102, 255, 0], edge_level: 2
+    Window.draw_font_ex 220, 10, "Life "+@player.life.to_s, @@font, z: 1000, shadow: true, edge: true, edge_width: 1, edge_color: [255, 102, 102], edge_level: 2
+
+    # Life gage 50,180
+    bar_len = 1.0*@player.life/$conf.player_max_hp*15
+    Window.draw_scale(310, 10, @@life_bar, bar_len, 1, 0, 0, 2000)
 
     # message_board
-    Window.draw 5, 5, @@waku, 2400
+    Window.draw 10, 10, @@waku, 2400
 
     scale = [0.104 * @panel.scale_x, 0.104 * @panel.scale_y]
     Window.draw_ex(5, 5, @panel.image, scale_x: scale[0], scale_y: scale[1],
                      center_x: 0, center_y: 0, alpha: @panel.alpha, z: 2500)
 
     @bullets.each do |obj|
-      draw_point = obj.point / 10 + Point.new(5, 5)
+      ratio = 0.1
+      draw_point = obj.point * ratio + Point.new(10, 10)
+      draw_point.x -= obj.image.width * ratio
+      draw_point.y -= obj.image.height * ratio
       Window.draw_scale( *draw_point.to_a, obj.image, 0.15, 0.15, 0, 0, 2500 )
     end
 
     # Rest Enemies
     Window.draw *($conf.draw_gap.to_a), @@background_image, 0
 
-    debug_string = "load=" + Window.get_load.round.to_s + "%"
+    debug_string = "load=" + Window.get_load.round.to_s + "%" if $conf.debug
     Window.draw_font 450, 10, debug_string, @@font, :z => 5000 if $conf.debug
   end
 end
@@ -65,14 +70,14 @@ class GameOverScene < Scene::Base
   def init(args)
     @enemies = args[:enemies]
     @bullets = args[:bullets]
-    @level = args[:level]
+    @level = args[:level] + 1
 
     @panel = DynamicMessagePanel.new(:gameover)
   end
 
   def update
-      @next_scene = RankingScene.new(level: @level) if Input.key_push?(K_Z) and 3 < self.elap_time
-    @next_scene = RankingScene.new(level: @level) if 10 < self.elap_time
+      @next_scene = RankingScene.new(level: @level) if Input.key_push?(K_Z) and 1 < self.elap_time
+    @next_scene = RankingScene.new(level: @level) if 5 < self.elap_time
 
     Sprite.update [@enemies, @bullets, @panel]
     @bullets.clean_outer
@@ -89,26 +94,28 @@ class GameOverScene < Scene::Base
   def render
     Sprite.draw [@enemies, @bullets, [@panel]]
 
-    Window.draw_font_ex 10, 160, "Lv. "+@level.to_s, @@font, z: 1000, shadow: true
-    Window.draw_font_ex 10, 180, "Life", @@font, z: 1000, shadow: true
-    Window.draw_font_ex 50, 180, "0", @@font, z: 1000, shadow: true
+    Window.draw_font_ex 220, 40, "Lv. "+@level.to_s, @@font, z: 1000, shadow: true,edge: true, edge_width: 1, edge_color: [102, 255, 0], edge_level: 2
+    Window.draw_font_ex 220, 10, "Life 0", @@font, z: 1000, shadow: true, edge: true, edge_width: 1, edge_color: [255, 102, 102], edge_level: 2
 
     # message_board
-    Window.draw 5, 5, @@waku, 2400
+    Window.draw 10, 10, @@waku, 2400
 
     scale = [0.104 * @panel.scale_x, 0.104 * @panel.scale_y]
     Window.draw_ex(5, 5, @panel.image, scale_x: scale[0], scale_y: scale[1],
                      center_x: 0, center_y: 0, alpha: @panel.alpha, z: 2500)
 
     (@enemies.working + @bullets).each do |obj|
-      draw_point = obj.point / 10 + Point.new(5, 5)
+      ratio = 0.1
+      draw_point = obj.point * ratio + Point.new(10, 10)
+      draw_point.x -= obj.image.width * ratio
+      draw_point.y -= obj.image.height * ratio
       Window.draw_scale( *draw_point.to_a, obj.image, 0.15, 0.15, 0, 0, 2500 )
     end
 
     # Rest Enemies
     Window.draw *($conf.draw_gap.to_a), @@background_image, 0
 
-    debug_string = "load=" + Window.get_load.round.to_s + "%"
+    debug_string = "load=" + Window.get_load.round.to_s + "%" if $conf.debug
     Window.draw_font 450, 10, debug_string, @@font, :z => 5000 if $conf.debug
   end
 end
