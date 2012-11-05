@@ -28,6 +28,7 @@ object{
 	  Cube
 	  
 	  translate<0, 0, -1>
+	  material{M_Ruby_Glass}
 	}
 	
 	object
@@ -35,11 +36,16 @@ object{
 	  Sphere
 	  
 	  scale<0.3, 0.3, 1>
+	  material{M_Ruby_Glass}
 	}
   }
             
   scale 1.8
     
-  material{M_Glass}
-  finish{brilliance 1.0 specular 0.5  irid{0.4 thickness 0.2 turbulence 1.0} }
+//  material{M_Glass}
+//  finish{brilliance 1.0 specular 0.5  irid{0.4 thickness 0.2 turbulence 1.0} }
+  
+
+  material{M_Ruby_Glass}
+  finish{brilliance 3.0 specular 0.7}
 }
