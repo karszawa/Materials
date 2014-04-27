@@ -13,18 +13,13 @@ require './src/scene/ending.rb'
 class Array; include ArrayExtension; end
 
 
-class PlayScene < Scene::Base
-  def init
-    @player = Player.new(lambda{ |blt| @bullets << blt })
-
-    @level = 0
-
-    @enemies = []
-    @bullets = []
-
-    @panels = []
-
-    @scenario_begin_time = 0
+class ActiveSceneBase < Scene::Base
+  def init(args)
+    @player = args[:player]
+    @level = args[:level]
+    @enemies = args[:enemies]
+    @bullets = args[:bullets]
+    @panels = args[:panels]
 
     def @enemies.working; select{|o| o.class != OpenStruct }; end
 
@@ -39,67 +34,36 @@ class PlayScene < Scene::Base
     def @bullets.clean_outer
       Sprite.check($conf.divid_line, self, nil, :out)
     end
-
-    def @enemies.scenario_clear?
-      self.count{ |x| x.silver } == self.size
-    end
-
-    @enemies.read_db(@level)
-    @panels << DynamicMessagePanel.new(:howto)
-
-
-    @@bgm.play
-  end
-
-  def quit
-    @@bgm.stop
   end
 
   def update
     Sprite.update [@player, @enemies, @bullets, @panels]
-    Sprite.clean @enemies; Sprite.clean @bullets; Sprite.clean @panels
 
     Sprite.check @enemies, @bullets, :hit
     Sprite.check @player, @enemies, :hit
 
     @bullets.clean_outer
-    @enemies.revitalize(elap_time - @scenario_begin_time)
 
-    if @enemies.scenario_clear?
-      @enemies.clear
-      @enemies.read_db(@level += 1)
-
-      @next_scene = GameClearScene.new(player: @player, bullets: @bullets,
-                                       level: @level) if @enemies.size == 0
-
-      @panels << DynamicMessagePanel.new(:levelup) unless @next_scene
-
-      @scenario_begin_time = elap_time
-      @@levelup_se.play
-    end
-
-    if @player.vanished?
-      args = {enemies: @enemies, bullets: @bullets, level: @level}
-      @next_scene = GameOverScene.new(args)
-    end
+    Sprite.clean @enemies; Sprite.clean @bullets; Sprite.clean @panels
   end
 
-
-  @@bgm = Sound.new('./snd/play.wav'); @@bgm.loop_count = -1
-  @@levelup_se = Sound.new('./snd/levelup.wav')
   @@font = Font.new 20
   @@completed_font = Font.new 50
   @@background_image = Image.load('./img/play_background.png')
   @@life_bar = Image.load('./img/life_bar.png')
   @@waku = Image.load('./img/waku.png')
   def render
-    Sprite.draw [@player, @enemies, @bullets, @panels]
+    Sprite.draw([@player, @enemies, @bullets, @panels])
 
-    Window.draw_font_ex 220, 40, "Lv. "+(@level+1).to_s, @@font, z: 1000, shadow: true,edge: true, edge_width: 1, edge_color: [102, 255, 0], edge_level: 2
-    Window.draw_font_ex 220, 10, "Life "+@player.life.to_s, @@font, z: 1000, shadow: true, edge: true, edge_width: 1, edge_color: [255, 102, 102], edge_level: 2
+    Window.draw_font_ex(220, 40, "Lv. "+(@level+1).to_s, @@font,
+                        z: 1000, shadow: true,edge: true, edge_width: 1,
+                        edge_color: [102, 255, 0], edge_level: 2)
+    Window.draw_font_ex(220, 10, "Life "+@player.life.to_s, @@font,
+                        z: 1000, shadow: true, edge: true, edge_width: 1,
+                        edge_color: [255, 102, 102], edge_level: 2)
 
     # message_board
-    Window.draw 10, 10, @@waku, 2400
+    Window.draw(10, 10, @@waku, 2400)
 
     @panels.each do |panel|
       scale = [0.104 * panel.scale_x, 0.104 * panel.scale_y]
@@ -120,12 +84,63 @@ class PlayScene < Scene::Base
     Window.draw_scale(310, 10, @@life_bar, bar_len, 1, 0, 0, 2000)
 
     # Rest Enemies
-    Window.draw *($conf.draw_gap.to_a), @@background_image, 0
+    Window.draw(*($conf.draw_gap.to_a), @@background_image, 0)
 
 
     debug_string = "load=" + Window.get_avg_load.round.to_s + "%" if $conf.debug
-    Window.draw_font 450, 500, debug_string, @@font, :z => 5000 if $conf.debug
+    Window.draw_font(450, 500, debug_string, @@font, z: 5000) if $conf.debug
   end
+
+  def zip_params
+    { player: @player, level: @level, enemeis: @enemies, bullets: @bullets,
+      panels: @panels}
+  end
+end
+
+
+class PlayScene < ActiveSceneBase
+  def init
+    super(player: Player.new(lambda{ |blt| @bullets << blt }), level: 0,
+          enemies: [], bullets: [], panels: [])
+
+    def @enemies.scenario_clear?
+      self.count{ |x| x.silver } == self.size
+    end
+
+    @scenario_begin_time = 0
+
+    @enemies.read_db(0)
+
+    @panels << DynamicMessagePanel.new(:howto)
+
+    @@bgm.play
+  end
+
+  def quit
+    @@bgm.stop
+  end
+
+  def update
+    @enemies.revitalize(elap_time - @scenario_begin_time)
+
+    if @enemies.scenario_clear?
+      @enemies.clear
+      @enemies.read_db(@level += 1)
+
+      @next_scene = GameClearScene.new(zip_params) if @enemies.size == 0
+
+      @panels << DynamicMessagePanel.new(:levelup) unless @next_scene
+
+      @scenario_begin_time = elap_time
+      @@levelup_se.play
+    end
+
+    @next_scene = GameOverScene.new(zip_params) if @player.vanished?
+  end
+
+
+  @@bgm = Sound.new('./snd/play.wav'); @@bgm.loop_count = -1
+  @@levelup_se = Sound.new('./snd/levelup.wav')
 end
 
 
